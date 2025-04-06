@@ -23,3 +23,5 @@ tqdm==4.67.1
 transformers==4.50.3
 typing_extensions==4.13.1
 urllib3==2.3.0
+flask==2.3.3
+pymongo==4.11.3
