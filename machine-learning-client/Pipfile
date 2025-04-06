@@ -34,4 +34,3 @@ flask = "==2.3.3"
 pymongo = "==4.11.3"
 
 [dev-packages]
-tomli = "*"
