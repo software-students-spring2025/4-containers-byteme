@@ -1,8 +1,7 @@
-from pymongo import MongoClient
+"""MongoDB connection setup using environment variables."""
 import os
+from pymongo import MongoClient
 
-print(os.getenv("MONGO_HOST"))
-print(os.getenv("MONGO_PORT"))
 MONGO_HOST = os.getenv("MONGO_HOST")
 MONGO_PORT = int(os.getenv("MONGO_PORT"))
 MONGO_DB = os.getenv("MONGO_DB")
