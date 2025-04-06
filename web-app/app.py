@@ -9,13 +9,13 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     """Render home page"""
-    return render_template("index.html")
+    return render_template("page.html")
 
 
 @app.route("/journal")
 def about():
     """Render journaling page"""
-    return render_template("journal.html")
+    return render_template("newEntry.html")
 
 
 if __name__ == "__main__":
