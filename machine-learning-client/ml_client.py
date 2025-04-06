@@ -1,10 +1,13 @@
 """Sentiment analysis Flask API using RoBERTa and MongoDB."""
+
 # pip install transformers torch scipy
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from scipy.special import softmax
 import torch
+
 # import flask
 from flask import Flask, request, jsonify
+
 # import database connection
 from db import db
 
@@ -23,8 +26,9 @@ MODEL_NAME = "cardiffnlp/twitter-roberta-base-sentiment"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
 
+
 def analyze_sentiment(text: str) -> dict:
-    '''
+    """
     Analyze the sentiment of a given text using a RoBERTa-based sentiment analysis model.
 
     Args:
@@ -32,8 +36,8 @@ def analyze_sentiment(text: str) -> dict:
 
     Returns:
         dict[str, float]: A dictionary containing sentiment
-        probabilities ('negative', 'neutral', 'positive') 
-        and a 'composite_score' ranging from 1 to 5, where 1 indicates strong negativity 
+        probabilities ('negative', 'neutral', 'positive')
+        and a 'composite_score' ranging from 1 to 5, where 1 indicates strong negativity
         and 5 indicates strong positivity.
 
         Example:
@@ -43,9 +47,9 @@ def analyze_sentiment(text: str) -> dict:
             'positive': 0.84,
             'composite_score': 4.53
         }
-    '''
+    """
     # Tokenize the input text
-    encoded_text = tokenizer(text, return_tensors='pt')
+    encoded_text = tokenizer(text, return_tensors="pt")
     with torch.no_grad():
         output = model(**encoded_text)
     # Get the raw scores from the model output
@@ -58,12 +62,13 @@ def analyze_sentiment(text: str) -> dict:
     composite_score = round(composite_score, 2)
 
     sentiment_scores = {
-        'negative': float(score[0]),
-        'neutral': float(score[1]),
-        'positive': float(score[2]),
-        'composite_score': composite_score
+        "negative": float(score[0]),
+        "neutral": float(score[1]),
+        "positive": float(score[2]),
+        "composite_score": composite_score,
     }
     return sentiment_scores
+
 
 @app.route("/analyze", methods=["POST"])
 def analyze_and_store():
@@ -78,9 +83,7 @@ def analyze_and_store():
 
     sentiment_scores = analyze_sentiment(text)
     entries_col.update_one(
-        {"_id" : entry_id},
-        {"$set": {"sentiment" : sentiment_scores}},
-        upsert=True
+        {"_id": entry_id}, {"$set": {"sentiment": sentiment_scores}}, upsert=True
     )
 
     return jsonify({"status": "updated", "sentiment": sentiment_scores})
@@ -88,26 +91,26 @@ def analyze_and_store():
 
 if __name__ == "__main__":
 
-    #example_positive = (
+    # example_positive = (
     #    "Today was such a good day. I woke up feeling refreshed and energized. "
     #    "The sun was shining, and I finally had time to go for a walk in the park. "
-    #)
-    #sentiment_scores = analyze_sentiment(example_positive)
-    #print(f"Composite Score for Example1: {sentiment_scores['composite_score']:.2f}")
+    # )
+    # sentiment_scores = analyze_sentiment(example_positive)
+    # print(f"Composite Score for Example1: {sentiment_scores['composite_score']:.2f}")
 
-    #example_neutral = (
+    # example_neutral = (
     #    "Today was a fairly ordinary day. I woke up and had a simple breakfast. "
     #    "I worked for a few hours and had a couple of meetings in the afternoon."
-    #)
-    #sentiment_scores = analyze_sentiment(example_neutral)
-    #print(f"Composite Score for Example2: {sentiment_scores['composite_score']:.2f}")
+    # )
+    # sentiment_scores = analyze_sentiment(example_neutral)
+    # print(f"Composite Score for Example2: {sentiment_scores['composite_score']:.2f}")
 
-    #example_negative = (
+    # example_negative = (
     #    "I feel frustrated today. Nothing seems to be going right at work, "
     #    "and I’m overwhelmed by everything on my to-do list."
-    #)
-    #sentiment_scores = analyze_sentiment(example_negative)
-    #print(f"Composite Score for Example3: {sentiment_scores['composite_score']:.2f}")
+    # )
+    # sentiment_scores = analyze_sentiment(example_negative)
+    # print(f"Composite Score for Example3: {sentiment_scores['composite_score']:.2f}")
 
     app.run(host="0.0.0.0", port=5001)
     print("running on port 5001")

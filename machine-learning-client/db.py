@@ -1,4 +1,5 @@
 """MongoDB connection setup using environment variables."""
+
 import os
 from pymongo import MongoClient
 
