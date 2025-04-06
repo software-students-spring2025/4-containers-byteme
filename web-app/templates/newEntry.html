@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Digital Journal</title>
+  <style>
+@font-face {
+  font-family: 'September Mornings';
+  src: url('SeptemberMornings.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: url('images/newEntry.avif') no-repeat center center fixed;
+  background-size: cover;
+  font-family: Arial, sans-serif; /* default for everything else */
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+form {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 400px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input[type="date"],
+textarea {
+  font-family: 'September Mornings', cursive;
+  font-size: 40px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 100%;
+  resize: none;
+  overflow-y: hidden;
+}
+textarea::placeholder {
+  font-family: 'September Mornings', cursive;
+  font-size: 40px;
+  color: #999;
+}
+
+button {
+  background-color: #aedaeb;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #7baf86;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  font-size: 40px;
+}
+
+  </style>
+</head>
+<body>
+  <form id="journalForm">
+    <h1>My Journal</h1>
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required>
+
+    <label for="entry">Journal Entry:</label>
+    <textarea id="entry" name="entry" placeholder="Write your thoughts..." required></textarea>
+
+    <button type="submit">Add Entry</button>
+  </form>
+
+  <script>
+    const textarea = document.getElementById('entry');
+
+    // Auto-resize textarea
+    textarea.addEventListener('input', () => {
+      textarea.style.height = 'auto'; 
+      textarea.style.height = `${textarea.scrollHeight}px`; 
+    });
+
+    document.getElementById('journalForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const date = document.getElementById('date').value;
+      const entry = textarea.value;
+
+      try {
+        //UPDATE THIS
+        const response = await fetch('http://localhost:5000/api/journal', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ date, entry })
+        });
+
+        if (response.ok) {
+          alert('Journal entry saved!');
+          document.getElementById('journalForm').reset();
+          textarea.style.height = 'auto';
+        } else {
+          alert('Error saving entry.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Server error.');
+      }
+    });
+  </script>
+</body>
+</html>
