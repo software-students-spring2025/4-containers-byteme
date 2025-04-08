@@ -55,7 +55,7 @@ def test_analyze_sentiment_positive():
     """Test sentiment scores for positive text"""
     text = "Today was such a good day. I woke up feeling refreshed and energized."
     sentiment_score = analyze_sentiment(text)
-    assert (sentiment_score["positive"] > 0.5 
+    assert (sentiment_score["positive"] > 0.5
     ), "Expected positive sentiment score to be greater than 0.5"
     assert (
         sentiment_score["negative"] < 0.1
@@ -74,8 +74,7 @@ def test_analyze_sentiment_negative():
     ), "Expected positive sentiment score to be less than 0.1"
     assert (
         sentiment_score["negative"] > 0.5
-    ), "Expected negative sentiment score to be greater than 0.5" 
+    ), "Expected negative sentiment score to be greater than 0.5"
     assert (
         sentiment_score["composite_score"] < 3
     ), "Expected composite score to be less than 3"
-    
