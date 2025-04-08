@@ -14,7 +14,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ml-client-test ./machine_learning_client
+          docker build -t ml-client-test ./machine-learning-client
 
       - name: Run tests inside container
         run: |
