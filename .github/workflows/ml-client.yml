@@ -19,6 +19,6 @@ jobs:
         run: |
           docker build -t ml-client-test ./machine-learning-client
 
-      - name: Run tests inside container
+      - name: Run tests inside container with env vars
         run: |
-          docker run --rm ml-client-test pytest
+          docker run --rm --env-file machine-learning-client/.env ml-client-test pytest
