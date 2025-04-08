@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FeelWrite – Journal Entries</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f7f9f7;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      margin: 30px 0;
+      color: #629b52;
+    }
+
+    .entries {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 0 20px 100px; /* bottom padding for button space */
+    }
+
+    .entry {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+      padding: 20px;
+      width: 300px;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: transform 0.2s;
+    }
+
+    .entry:hover {
+      transform: translateY(-5px);
+    }
+
+    .entry h3 {
+      margin-top: 0;
+      color: #444;
+      font-size: 18px;
+    }
+
+    .entry p {
+      color: #555;
+      font-size: 15px;
+      flex-grow: 1;
+    }
+
+    .add-entry-button {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #7cc783;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 30px;
+      cursor: pointer;
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+      transition: background 0.3s ease;
+    }
+    .signout-button {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        background-color: #66b46e;
+        color: #ffffff;
+        border: none;
+        padding: 10px 16px;
+        font-size: 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: background 0.2s ease;
+    }
+
+    .signout-button:hover {
+        background-color: #497938;
+    }
+
+
+    .add-entry-button:hover {
+      background-color: #66b46e;
+    }
+
+    .add-entry-button::after {
+      content: "+";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>FeelWrite</h1>
+
+  <div class="entries">
+    <div class="entry">
+      <h3>April 8, 2025</h3>
+      <p>another day of not locking in</p>
+    </div>
+    <div class="entry">
+      <h3>April 7, 2025</h3>
+      <p>This weather is bleh</p>
+    </div>
+    <div class="entry">
+      <h3>April 6, 2025</h3>
+      <p>Need to stop procrastinating</p>
+    </div>
+    <!-- Add more .entry blocks as needed -->
+  </div>
+
+  <button class="add-entry-button" onclick="location.href='newEntry.html'" title="Add Entry"></button>
+  <button class="signout-button" onclick="location.href='signUp.html'">Sign Out</button>
+
+
+
+
+</body>
+</html>
