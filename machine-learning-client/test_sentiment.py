@@ -79,3 +79,4 @@ def test_analyze_sentiment_negative():
     assert sentiment_score["composite_score"] < 3, (
         "Expected composite score to be less than 3"
     )
+
