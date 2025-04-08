@@ -1,4 +1,5 @@
 """unit tests for sentiment analysis functions"""
+
 import pytest
 from ml_client import analyze_sentiment
 

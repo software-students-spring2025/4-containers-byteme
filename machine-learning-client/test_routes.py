@@ -1,4 +1,5 @@
 """unit tests for ml-client routes"""
+
 from unittest.mock import patch
 import pytest
 from ml_client import app
@@ -14,7 +15,9 @@ def client():
 
 @patch("ml_client.entries_col")
 @patch("ml_client.analyze_sentiment")
-def test_analyze_and_store_success(mock_analyze, mock_entries_col, client): # pylint: disable=redefined-outer-name
+def test_analyze_and_store_success(
+    mock_analyze, mock_entries_col, client
+):  # pylint: disable=redefined-outer-name
     """Test the /analyze route for successful sentiment analysis and DB update."""
     test_entry_id = "123"
     test_text = "I love this app!"
