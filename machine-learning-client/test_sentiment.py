@@ -42,18 +42,33 @@ def test_composite_score_range(text):
     result = analyze_sentiment(text)
     assert 1.0 <= result["composite_score"] <= 5.0, "Composite score out of range."
 
+
 def test_analyze_sentiment_positive():
-    """Test that analyze_sentiment returns correct sentiment scores for positive text"""
+    """Test sentiment scores for positive text"""
     text = "Today was such a good day. I woke up feeling refreshed and energized."
     sentiment_score = analyze_sentiment(text)
-    assert sentiment_score["positive"] > 0.5, "Expected positive sentiment score to be greater than 0.5"
-    assert sentiment_score["negative"] < 0.1, "Expected negative sentiment score to be less than 0.1"
-    assert sentiment_score["composite_score"] > 3, "Expected composite score to be greater than 3"
+    assert sentiment_score["positive"] > 0.5, (
+        "Expected positive sentiment score to be greater than 0.5"
+    )
+    assert sentiment_score["negative"] < 0.1, (
+        "Expected negative sentiment score to be less than 0.1"
+    )
+    assert sentiment_score["composite_score"] > 3, (
+        "Expected composite score to be greater than 3"
+    )
+
 
 def test_analyze_sentiment_negative():
-    """Test that analyze_sentiment returns correct sentiment scores for negative text"""
+    """Test sentiment scores for negative text"""
     text = "I feel frustrated today. Nothing seems to be going right at work"
     sentiment_score = analyze_sentiment(text)
-    assert sentiment_score["positive"] < 0.1, "Expected positive sentiment score to be less than 0.1"
-    assert sentiment_score["negative"] > 0.5, "Expected negative sentiment score to be greater than 0.5"
-    assert sentiment_score["composite_score"] < 3, "Expected composite score to be less than 3"
+    assert sentiment_score["positive"] < 0.1, (
+        "Expected positive sentiment score to be less than 0.1"
+    )
+    assert sentiment_score["negative"] > 0.5, (
+        "Expected negative sentiment score to be greater than 0.5"
+    )
+    assert sentiment_score["composite_score"] < 3, (
+        "Expected composite score to be less than 3"
+    )
+    
