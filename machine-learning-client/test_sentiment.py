@@ -32,9 +32,10 @@ def test_analyze_sentiment_keys(text, expected_key):
     assert "positive" in result, "Expected 'positive' key in result"
     assert "neutral" in result, "Expected 'neutral' key in result"
     assert "composite_score" in result, "Expected 'composite_score' key in result"
-    assert result[expected_key] > 0, (
-        f"Expected {expected_key} sentiment score to be greater than 0"
-    )
+    assert (
+        result[expected_key] > 0
+    ),f"Expected {expected_key} sentiment score to be greater than 0"
+    
 
 
 @pytest.mark.parametrize(
@@ -55,27 +56,30 @@ def test_analyze_sentiment_positive():
     """Test sentiment scores for positive text"""
     text = "Today was such a good day. I woke up feeling refreshed and energized."
     sentiment_score = analyze_sentiment(text)
-    assert sentiment_score["positive"] > 0.5, (
-        "Expected positive sentiment score to be greater than 0.5"
-    )
-    assert sentiment_score["negative"] < 0.1, (
-        "Expected negative sentiment score to be less than 0.1"
-    )
-    assert sentiment_score["composite_score"] > 3, (
-        "Expected composite score to be greater than 3"
-    )
+    assert (sentiment_score["positive"] > 0.5 
+    ), "Expected positive sentiment score to be greater than 0.5"
+    
+    assert (
+        sentiment_score["negative"] < 0.1
+    ), "Expected negative sentiment score to be less than 0.1"
+    
+    assert (
+        sentiment_score["composite_score"] > 3
+    ), "Expected composite score to be greater than 3"
 
 
 def test_analyze_sentiment_negative():
     """Test sentiment scores for negative text"""
     text = "I feel frustrated today. Nothing seems to be going right at work"
     sentiment_score = analyze_sentiment(text)
-    assert sentiment_score["positive"] < 0.1, (
-        "Expected positive sentiment score to be less than 0.1"
-    )
-    assert sentiment_score["negative"] > 0.5, (
-        "Expected negative sentiment score to be greater than 0.5"
-    )
-    assert sentiment_score["composite_score"] < 3, (
-        "Expected composite score to be less than 3"
-    )
+    assert (
+        sentiment_score["positive"] < 0.1
+    ), "Expected positive sentiment score to be less than 0.1"
+    assert (
+        sentiment_score["negative"] > 0.5
+    ), "Expected negative sentiment score to be greater than 0.5"
+    
+    assert (
+        sentiment_score["composite_score"] < 3
+    ), "Expected composite score to be less than 3"
+
