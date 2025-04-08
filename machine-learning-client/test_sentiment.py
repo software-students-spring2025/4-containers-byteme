@@ -35,7 +35,6 @@ def test_analyze_sentiment_keys(text, expected_key):
     assert (
         result[expected_key] > 0
     ),f"Expected {expected_key} sentiment score to be greater than 0"
-    
 
 
 @pytest.mark.parametrize(
@@ -58,11 +57,9 @@ def test_analyze_sentiment_positive():
     sentiment_score = analyze_sentiment(text)
     assert (sentiment_score["positive"] > 0.5 
     ), "Expected positive sentiment score to be greater than 0.5"
-    
     assert (
         sentiment_score["negative"] < 0.1
     ), "Expected negative sentiment score to be less than 0.1"
-    
     assert (
         sentiment_score["composite_score"] > 3
     ), "Expected composite score to be greater than 3"
@@ -77,9 +74,8 @@ def test_analyze_sentiment_negative():
     ), "Expected positive sentiment score to be less than 0.1"
     assert (
         sentiment_score["negative"] > 0.5
-    ), "Expected negative sentiment score to be greater than 0.5"
-    
+    ), "Expected negative sentiment score to be greater than 0.5" 
     assert (
         sentiment_score["composite_score"] < 3
     ), "Expected composite score to be less than 3"
-
+    
