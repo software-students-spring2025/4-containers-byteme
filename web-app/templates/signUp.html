@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FeelWrite</title>
+  <style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: rgb(184, 204, 181);
+        background-size: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .container {
+        background: white;
+        padding: 40px 30px;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 500px;
+        margin-bottom: 40px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+
+    h1 {
+        font-size: 36px;
+        font-weight: bold;
+        color: #629b52;
+        margin-bottom: 20px;
+        margin-top: 20px;
+        text-align: center;
+        
+    }
+
+
+
+
+    .tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        margin-top: 40px; /* this pushes them below the hole punches */
+    }
+
+
+    .tabs button {
+      padding: 10px 20px;
+      margin: 0 5px;
+      border: none;
+      background-color: #f2e8f1;
+      color: #333;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.3s ease;
+    }
+
+    .tabs button.active {
+      background-color: #da93c677;
+      color: #fff;
+    }
+
+    form {
+      display: none;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    form.active {
+      display: block;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .button {
+      margin-top: 25px;
+    }
+
+    .button input {
+      width: 100%;
+      padding: 12px;
+      background-color: #7cc783;
+      color: white;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .button input:hover {
+      background-color: #8dc89e;
+    }
+  </style>
+</head>
+<body>
+
+    
+
+  <!-- STICKY NOTE CONTAINER -->
+  <div class="container">
+    <h1>FeelWrite</h1>
+    <div class="tabs">
+      <button id="login-tab" class="active">Login</button>
+      <button id="signup-tab">Sign Up</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="login-form" class="active" action="/login" method="POST">
+      <label for="login-username">Username</label>
+      <input type="text" id="login-username" name="username" required>
+
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" name="password" required>
+
+      <div class="button">
+        <input type="submit" value="Login">
+      </div>
+    </form>
+
+    <!-- Sign Up Form -->
+    <form id="signup-form" action="/register" method="POST">
+      <label for="signup-username">Username</label>
+      <input type="text" id="signup-username" name="username" required>
+
+      <label for="signup-password">Password</label>
+      <input type="password" id="signup-password" name="password" required>
+
+      <div class="button">
+        <input type="submit" value="Sign Up">
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const loginTab = document.getElementById('login-tab');
+    const signupTab = document.getElementById('signup-tab');
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+
+    loginTab.addEventListener('click', () => {
+      loginTab.classList.add('active');
+      signupTab.classList.remove('active');
+      loginForm.classList.add('active');
+      signupForm.classList.remove('active');
+    });
+
+    signupTab.addEventListener('click', () => {
+      signupTab.classList.add('active');
+      loginTab.classList.remove('active');
+      signupForm.classList.add('active');
+      loginForm.classList.remove('active');
+    });
+  </script>
+</body>
+</html>
