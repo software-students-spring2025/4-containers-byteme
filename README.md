@@ -9,10 +9,10 @@ Our project is a responsive digital journal web app that allows users to log the
 
 ## Teammates
 
-[Siyu Lei](https://github.com/em815)
-[Jessica Chen](https://github.com/jessicahc)
-[Shayne Chan](https://github.com/shayne773)
-[Lina Sanchez](https://github.com/linahsan)
+- [Siyu Lei](https://github.com/em815)
+- [Jessica Chen](https://github.com/jessicahc)
+- [Shayne Chan](https://github.com/shayne773)
+- [Lina Sanchez](https://github.com/linahsan)
 
 ## Steps to run the app
 
