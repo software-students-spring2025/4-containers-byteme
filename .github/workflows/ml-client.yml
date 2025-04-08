@@ -2,11 +2,7 @@ name: Machine Learning Client CI
 
 on:
   push:
-    paths:
-      - 'machine_learning_client/**'
   pull_request:
-    paths:
-      - 'machine_learning_client/**'
 
 jobs:
   test:
