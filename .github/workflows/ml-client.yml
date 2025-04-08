@@ -1,0 +1,24 @@
+name: Machine Learning Client CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Copy .env.example to .env
+        run: cp machine-learning-client/.env.example machine-learning-client/.env
+
+      - name: Build Docker image
+        run: |
+          docker build -t ml-client-test ./machine-learning-client
+
+      - name: Run tests inside container with env vars
+        run: |
+          docker run --rm --env-file machine-learning-client/.env ml-client-test pytest
