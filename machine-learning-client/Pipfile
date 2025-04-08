@@ -35,3 +35,4 @@ pymongo = "==4.11.3"
 
 [dev-packages]
 tomli = "*"
+pytest = "*"
