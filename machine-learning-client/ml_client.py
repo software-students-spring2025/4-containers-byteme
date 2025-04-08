@@ -27,7 +27,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
 
 
-def analyze_sentiment(text: str) -> dict:
+def analyze_sentiment(text):
     """
     Analyze the sentiment of a given text using a RoBERTa-based sentiment analysis model.
 
@@ -58,8 +58,7 @@ def analyze_sentiment(text: str) -> dict:
     score = softmax(scores)
 
     # Map to composite score (1 to 5): Negative - 1, Neutral - 3, Positive - 5
-    composite_score = float(round(score[0] * 1 + score[1] * 3 + score[2] * 5, 2))
-    composite_score = round(composite_score, 2)
+    composite_score = round(score[0] * 1 + score[1] * 3 + score[2] * 5, 2)
 
     sentiment_scores = {
         "negative": float(score[0]),
