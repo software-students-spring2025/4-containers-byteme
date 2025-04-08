@@ -6,51 +6,45 @@
   <title>FeelWrite</title>
   <style>
     body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Segoe UI', sans-serif;
-        background: rgb(184, 204, 181);
-        background-size: cover;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: rgb(184, 204, 181);
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
 
     .container {
-        background: white;
-        padding: 40px 30px;
-        border-radius: 16px;
-        width: 90%;
-        max-width: 500px;
-        margin-bottom: 40px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+      background: white;
+      padding: 40px 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      margin-bottom: 40px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-
 
     h1 {
-        font-size: 36px;
-        font-weight: bold;
-        color: #629b52;
-        margin-bottom: 20px;
-        margin-top: 20px;
-        text-align: center;
-        
+      font-size: 36px;
+      font-weight: bold;
+      color: #629b52;
+      margin-bottom: 20px;
+      margin-top: 20px;
+      text-align: center;
     }
-
-
-
 
     .tabs {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
-        margin-top: 40px; /* this pushes them below the hole punches */
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      margin-top: 40px;
     }
-
 
     .tabs button {
       padding: 10px 20px;
@@ -117,9 +111,6 @@
 </head>
 <body>
 
-    
-
-  <!-- STICKY NOTE CONTAINER -->
   <div class="container">
     <h1>FeelWrite</h1>
     <div class="tabs">
@@ -128,7 +119,7 @@
     </div>
 
     <!-- Login Form -->
-    <form id="login-form" class="active" action="/login" method="POST">
+    <form id="login-form" class="active">
       <label for="login-username">Username</label>
       <input type="text" id="login-username" name="username" required>
 
@@ -141,7 +132,7 @@
     </form>
 
     <!-- Sign Up Form -->
-    <form id="signup-form" action="/register" method="POST">
+    <form id="signup-form">
       <label for="signup-username">Username</label>
       <input type="text" id="signup-username" name="username" required>
 
@@ -172,6 +163,47 @@
       loginTab.classList.remove('active');
       signupForm.classList.add('active');
       loginForm.classList.remove('active');
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+
+      const res = await fetch('http://127.0.0.1:5000/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('username', username);
+        window.location.href = 'index.html';
+      } else {
+        alert(data.error);
+      }
+    });
+
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('signup-username').value;
+      const password = document.getElementById('signup-password').value;
+
+      const res = await fetch('http://127.0.0.1:5000/register', {
+
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('username', username);
+        window.location.href = 'index.html';
+      } else {
+        alert(data.error);
+      }
     });
   </script>
 </body>

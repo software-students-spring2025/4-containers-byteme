@@ -14,7 +14,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: url('images/newEntry.avif') no-repeat center center fixed;
+  background: url('/images/newEntry.avif') no-repeat center center fixed;
   background-size: cover;
   font-family: Arial, sans-serif; /* default for everything else */
   font-size: 20px;
@@ -92,42 +92,30 @@ h1 {
   </form>
 
   <script>
-    const textarea = document.getElementById('entry');
-
-    // Auto-resize textarea
-    textarea.addEventListener('input', () => {
-      textarea.style.height = 'auto'; 
-      textarea.style.height = `${textarea.scrollHeight}px`; 
-    });
-
-    document.getElementById('journalForm').addEventListener('submit', async (e) => {
+    const username = localStorage.getItem('username');
+    const form = document.getElementById('journalForm');
+  
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
+      const content = document.getElementById('entry').value;  // ID matches <textarea id="entry">
       const date = document.getElementById('date').value;
-      const entry = textarea.value;
-
-      try {
-        //UPDATE THIS
-        const response = await fetch('http://localhost:5000/api/journal', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ date, entry })
-        });
-
-        if (response.ok) {
-          alert('Journal entry saved!');
-          document.getElementById('journalForm').reset();
-          textarea.style.height = 'auto';
-        } else {
-          alert('Error saving entry.');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Server error.');
+  
+      const res = await fetch('http://127.0.0.1:5000/add-entry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, content, date })
+      });
+  
+      const data = await res.json();
+      if (res.ok) {
+        alert(`Mood score: ${data.score}`);
+        window.location.href = 'index.html';
+      } else {
+        alert('Failed to add entry.');
       }
     });
   </script>
+  
+  
 </body>
 </html>
