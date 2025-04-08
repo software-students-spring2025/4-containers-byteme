@@ -1,13 +1,15 @@
-"""unit tests for sentiment analysis functions"""
+"""Unit tests for sentiment analysis functions."""
 
 import pytest
 from ml_client import analyze_sentiment
+
 
 def test_analyze_sentiment_returns_valid_output():
     """Test that analyze_sentiment returns a dictionary"""
     text = "Today was such a good day. I woke up feeling refreshed and energized."
     result = analyze_sentiment(text)
     assert isinstance(result, dict), "Result should be a dictionary."
+
 
 @pytest.mark.parametrize(
     "text,expected_key",
@@ -30,15 +32,21 @@ def test_analyze_sentiment_keys(text, expected_key):
     assert "positive" in result, "Expected 'positive' key in result"
     assert "neutral" in result, "Expected 'neutral' key in result"
     assert "composite_score" in result, "Expected 'composite_score' key in result"
-    assert result[expected_key] > 0, f"Expected {expected_key} sentiment score to be greater than 0"
+    assert result[expected_key] > 0, (
+        f"Expected {expected_key} sentiment score to be greater than 0"
+    )
 
 
 @pytest.mark.parametrize(
     "text",
-    ["It was a sunny day", "It was an average day", "I'm so frustrated right now"],
+    [
+        "It was a sunny day",
+        "It was an average day",
+        "I'm so frustrated right now",
+    ],
 )
 def test_composite_score_range(text):
-    """test composite score range"""
+    """Test composite score range"""
     result = analyze_sentiment(text)
     assert 1.0 <= result["composite_score"] <= 5.0, "Composite score out of range."
 
@@ -71,4 +79,3 @@ def test_analyze_sentiment_negative():
     assert sentiment_score["composite_score"] < 3, (
         "Expected composite score to be less than 3"
     )
-    
