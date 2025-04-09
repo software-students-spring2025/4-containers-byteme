@@ -15,6 +15,9 @@ from flask_login import (
     current_user,
 )
 from bson.objectid import ObjectId
+from datetime import datetime
+import requests
+import logging
 
 # loading env file
 load_dotenv()
@@ -22,6 +25,9 @@ load_dotenv()
 # app setup
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
+
+# Set up logging in Docker container's output
+logging.basicConfig(level=logging.DEBUG)
 
 # mongodb setup
 mongo_host = os.getenv("MONGO_HOST")
@@ -109,6 +115,45 @@ def add_entry():
     """Render journaling page"""
     return render_template("new_entry.html")
 
+@app.route("/submit-entry", methods=["POST"])
+@login_required
+def submit_entry():
+    """Submit entry"""
+    text = request.form["entry"]
+    date = request.form["date"]
+    doc = {
+        "user_id": current_user.id,
+        "journal_date": date,
+        "text": text,
+    }
+    new_entry_id = entries.insert_one(doc).inserted_id
+    app.logger.debug("*** submit_entry(): Inserted 1 entry: %s", new_entry_id)
+    
+    # Trigger the /analyze endpoint in the ml_client service
+    analyze_url = "http://ml-client:5001/analyze"  
+    response = requests.post(analyze_url, json={"entry_id": str(new_entry_id), "text": text})
+
+    if response.status_code == 200:
+        data = response.json()
+        status = data.get("status")
+        updated_entry_id = data.get("entry_id")
+
+        app.logger.debug("*** submit_entry(): Analysis result=%s, entry_id=%s", status, updated_entry_id)
+        return redirect(url_for("page", entry_id=updated_entry_id))
+    else:
+        app.logger.error("*** submit_entry(): Analysis failed: %s", response.text)
+        return "Error analyzing entry", 500
+
+@app.route("/page/<entry_id>")
+@login_required
+def page(entry_id):
+    """Render a journal entry page"""
+    entry = entries.find_one({"_id": ObjectId(entry_id)})
+    if not entry:
+        return "Entry not found", 404
+    app.logger.debug("*** page(): Found entry: %s", entry)
+    return render_template("page.html", entry=entry)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True)  
+    app.logger.debug("*** web-app is running")
