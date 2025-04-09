@@ -6,7 +6,7 @@
   <style>
 @font-face {
   font-family: 'September Mornings';
-  src: url('SeptemberMornings.ttf') format('truetype');
+  src: url('/static/SeptemberMornings.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -14,7 +14,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: url('images/newEntry.avif') no-repeat center center fixed;
+  background: url('/static/newEntry.avif') no-repeat center center fixed;
   background-size: cover;
   font-family: Arial, sans-serif; /* default for everything else */
   font-size: 20px;
@@ -80,7 +80,7 @@ h1 {
   </style>
 </head>
 <body>
-  <form id="journalForm">
+  <form id="journalForm" method="POST" action="{{ url_for('add_entry') }}">
     <h1>My Journal</h1>
     <label for="date">Date:</label>
     <input type="date" id="date" name="date" required>
@@ -90,44 +90,5 @@ h1 {
 
     <button type="submit">Add Entry</button>
   </form>
-
-  <script>
-    const textarea = document.getElementById('entry');
-
-    // Auto-resize textarea
-    textarea.addEventListener('input', () => {
-      textarea.style.height = 'auto'; 
-      textarea.style.height = `${textarea.scrollHeight}px`; 
-    });
-
-    document.getElementById('journalForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const date = document.getElementById('date').value;
-      const entry = textarea.value;
-
-      try {
-        //UPDATE THIS
-        const response = await fetch('http://localhost:5000/api/journal', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ date, entry })
-        });
-
-        if (response.ok) {
-          alert('Journal entry saved!');
-          document.getElementById('journalForm').reset();
-          textarea.style.height = 'auto';
-        } else {
-          alert('Error saving entry.');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Server error.');
-      }
-    });
-  </script>
 </body>
 </html>

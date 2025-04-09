@@ -100,15 +100,34 @@ def home():
     """Render home page"""
     if not current_user.is_authenticated:
         return redirect(url_for("login_signup"))
-    return render_template("index.html")
+
+    # fetch prev entries to display
+    user_entries = entries.find({"user_id": ObjectId(current_user.id)}).sort("date", pymongo.DESCENDING)
+    return render_template("index.html", entries=user_entries)
 
 
-@app.route("/add-entry")
+@app.route("/add-entry", methods=["GET", "POST"])
 @login_required
 def add_entry():
     """Render journaling page"""
-    return render_template("new_entry.html")
+    if request.method == "POST":
+        date = request.form["date"]
+        entry_text = request.form["entry"]
 
+        new_entry = {
+            "date": date,
+            "entry": entry_text,
+            "user_id": ObjectId(current_user.id),
+            "sentiment":{
+                "negative": 0.01,
+                "neutral": 0.15,
+                "positive": 0.84,
+                "composite_score": 4.53
+            }
+        }
+        entries.insert_one(new_entry)
+        return redirect(url_for("home"))
+    return render_template("new_entry.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
