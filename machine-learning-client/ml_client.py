@@ -85,7 +85,7 @@ def analyze_and_store():
         {"_id": entry_id}, {"$set": {"sentiment": sentiment_scores}}, upsert=True
     )
 
-    return jsonify({"status": "updated", "sentiment": sentiment_scores})
+    return jsonify({"status": "updated", "entry_id": entry_id})
 
 
 if __name__ == "__main__":
