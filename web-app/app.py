@@ -74,7 +74,7 @@ def login_signup():
                 return "User already exists", 400
             hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
             user_data = {"username": username, "password": hashed_password}
-            user_id = users.insert_one(user_data).inserted_id
+            _ = users.insert_one(user_data).inserted_id
             return redirect(url_for("login_signup"))
 
     return render_template("login_signup.html")
