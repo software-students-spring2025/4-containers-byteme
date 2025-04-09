@@ -6,6 +6,7 @@ services:
      - "27017:27017"
     volumes:
      - mongodb_data:/data/db
+     - ./machine-learning-client/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro #instantiate dummmy data
     networks:
       - app-network
   ml-client:
