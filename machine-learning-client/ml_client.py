@@ -7,16 +7,22 @@ import torch
 
 # import flask
 from flask import Flask, request, jsonify
+from bson.objectid import ObjectId
 
 # import database connection
 from db import db
 
+import logging
+
 app = Flask(__name__)
 entries_col = db["entries"]
 
+# Set up logging in Docker container's output
+logging.basicConfig(level=logging.DEBUG)
+
 """
 Module to analyze sentiment using a pre-trained
-RoBERTamodel for sentiment analysis on Twitter data.
+RoBERTa model for sentiment analysis on Twitter data.
 This module loads the model and tokenizer, 
 then performs sentiment analysis on input text.
 """
@@ -81,10 +87,20 @@ def analyze_and_store():
         return jsonify({"error": "entry_id and text are required"}), 400
 
     sentiment_scores = analyze_sentiment(text)
+    # Convert all sentiment scores to native Python types (float)
+    sentiment_scores = {
+        "negative": float(sentiment_scores.get("negative", 0)),
+        "neutral": float(sentiment_scores.get("neutral", 0)),
+        "positive": float(sentiment_scores.get("positive", 0)),
+        "composite_score": float(sentiment_scores.get("composite_score", 0))
+    }
+    app.logger.debug("* analyze_and_store(): Sentiment scores: %s", sentiment_scores)
+    print("* analyze_and_store(): Sentiment scores: %s", sentiment_scores)
     entries_col.update_one(
-        {"_id": entry_id}, {"$set": {"sentiment": sentiment_scores}}, upsert=True
+        {"_id": ObjectId(entry_id)}, {"$set": {"sentiment": sentiment_scores}}, upsert=True
     )
-
+    app.logger.debug("* analyze_and_store(): Updated entry with ID %s", entry_id)
+    print("* analyze_and_store(): Updated entry with ID %s", entry_id)
     return jsonify({"status": "updated", "entry_id": entry_id})
 
 
@@ -111,5 +127,6 @@ if __name__ == "__main__":
     # sentiment_scores = analyze_sentiment(example_negative)
     # print(f"Composite Score for Example3: {sentiment_scores['composite_score']:.2f}")
 
-    app.run(host="0.0.0.0", port=5001)
-    print("running on port 5001")
+    app.run(host="0.0.0.0", port=5001, debug=False)
+    print("ml-client running on port 5001")
+    app.logger.debug("*** ml-client is running")
