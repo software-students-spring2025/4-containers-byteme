@@ -6,19 +6,20 @@
   <style>
     @font-face {
       font-family: 'September Mornings';
-      src: url('SeptemberMornings.ttf') format('truetype');
+      src: url("{{ url_for('static', filename='fonts/SeptemberMornings.ttf') }}") format('truetype');
     }
 
     body {
       margin: 0;
       padding: 0;
-      background: url('images/4.webp') no-repeat center center fixed; /* Hardcoded for score 3 */
+      background: url('static/4.webp') no-repeat center center fixed; /* Hardcoded for score 3 */
       background-size: cover;
       font-family: sans-serif;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      transition: background 0.5s ease-in-out;
     }
 
     .container {
@@ -90,68 +91,48 @@
     .score-3 { background-color: #b8e8ee; }
     .score-4 { background-color: #f5e5b4; }
     .score-5 { background-color: #fed6c1; }
+
+    /* Back to Home button */
+    .back-button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="left-panel">
-      <div class="date">April 6, 2025</div>
-      <div class="entry">
-        I’m feeling okay today. Still anxious but hopeful. The sun peeked out for a bit this afternoon and I took a short walk and that helped.I’m feeling okay today. Still anxious but hopeful. The sun peeked out for a bit this afternoon and I took a short walk and that helped.
-      </div>
+      <a href="{{ url_for('home') }}" class="back-button">Back to Home</a>
+      <div class="date">{{ entry['journal_date'] }}</div>
+      <div class="entry">{{ entry['text'] }}</div>
     </div>
 
-    <div class="right-panel">
-      <div class="mood-bar">
-        <div class="mood-box score-4"></div>
-        <div class="mood-box score-4"></div>
-        <div class="mood-box score-4"></div>
-        <div class="mood-box score-4"></div>
-        <div class="mood-box"></div>
-      </div>
+    <p><strong>Mood Score:</strong> {{ sentiment_score }}</p>
+    
+    <div class="mood-bar">
+      {% for i in range(1, 6) %}
+        <div class="mood-box {% if i <= sentiment_score %}score-{{ sentiment_score }}{% endif %}"></div>
+      {% endfor %}
+    </div>
 
       <div class="quote-box">
         "Keep going, you’re doing better than you think."
       </div>
     </div>
   </div>
-
-  <!--
-  <script>
-    async function renderReflection() {
-      try {
-        const res = await fetch('http://localhost:5000/api/journal/latest');
-        const data = await res.json();
-        const { date, entry, score, quote } = data;
-
-        document.getElementById('entry-date').textContent = new Date(date).toDateString();
-        document.getElementById('entry-text').textContent = entry;
-        document.getElementById('quote-text').textContent = quote;
-
-        const bgMap = {
-          1: '1.jpg',
-          2: '2.jpeg',
-          3: '3.jpg',
-          4: '4.webp',
-          5: '5.jpg'
-        };
-        document.body.style.backgroundImage = `url('${bgMap[score]}')`;
-
-        const moodBar = document.getElementById('mood-bar');
-        moodBar.innerHTML = '';
-        for (let i = 1; i <= 5; i++) {
-          const box = document.createElement('div');
-          box.classList.add('mood-box');
-          if (i <= score) box.classList.add(`score-${score}`);
-          moodBar.appendChild(box);
-        }
-      } catch (err) {
-        console.error('Failed to load journal data:', err);
-      }
-    }
-
-    renderReflection();
-  </script>
-  -->
 </body>
 </html>

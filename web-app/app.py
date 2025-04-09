@@ -18,6 +18,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import requests
 import logging
+import random
 
 # loading env file
 load_dotenv()
@@ -106,7 +107,10 @@ def home():
     """Render home page"""
     if not current_user.is_authenticated:
         return redirect(url_for("login_signup"))
-    return render_template("index.html")
+
+    # fetch prev entries to display
+    user_entries = entries.find({"user_id": current_user.id}).sort("date", pymongo.DESCENDING)
+    return render_template("index.html", entries=user_entries)
 
 
 @app.route("/add-entry")
@@ -139,20 +143,23 @@ def submit_entry():
         updated_entry_id = data.get("entry_id")
 
         app.logger.debug("*** submit_entry(): Analysis result=%s, entry_id=%s", status, updated_entry_id)
-        return redirect(url_for("page", entry_id=updated_entry_id))
+        return redirect(url_for("view_entry", entry_id=updated_entry_id))
     else:
         app.logger.error("*** submit_entry(): Analysis failed: %s", response.text)
         return "Error analyzing entry", 500
 
-@app.route("/page/<entry_id>")
+@app.route("/entry/<entry_id>")
 @login_required
-def page(entry_id):
+def view_entry(entry_id):
     """Render a journal entry page"""
     entry = entries.find_one({"_id": ObjectId(entry_id)})
     if not entry:
         return "Entry not found", 404
-    app.logger.debug("*** page(): Found entry: %s", entry)
-    return render_template("page.html", entry=entry)
+    app.logger.debug("*** view_entry(): Found entry: %s", entry)
+    
+    sentiment_score = entry.get("sentiment", {}).get("composite_score", 0)
+    
+    return render_template("page.html", entry=entry, quotes=quotes, sentiment_score=sentiment_score)
 
 if __name__ == "__main__":
     app.run(debug=True)  
