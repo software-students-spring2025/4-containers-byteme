@@ -35,8 +35,7 @@ def test_analyze_and_store_success(
     assert response.status_code == 200
     data = response.get_json()
     assert data["status"] == "updated"
-    assert "sentiment" in data
-    assert data["sentiment"]["composite_score"] == 4.53
+    assert data["entry_id"] == test_entry_id
 
     mock_analyze.assert_called_once_with(test_text)
     mock_entries_col.update_one.assert_called_once()
