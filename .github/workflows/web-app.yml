@@ -1,4 +1,4 @@
-name: Machine Learning Client CI
+name: Web App Client CI
 
 on:
   push:
