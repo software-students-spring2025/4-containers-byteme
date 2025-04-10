@@ -21,7 +21,7 @@ class MockUser(UserMixin):
 
 
 @pytest.fixture
-def test_client():
+def client():
     """Fixture to create a test client for the Flask app."""
     app.config["TESTING"] = True
     with app.test_client() as client_fixture:
@@ -30,7 +30,9 @@ def test_client():
 
 @patch("app.users")
 @patch("app.bcrypt")
-def test_login_success(mock_bcrypt, mock_users, test_client):
+def test_login_success(
+    mock_bcrypt, mock_users, client
+):  # pylint: disable=redefined-outer-name
     """Test successful login."""
     mock_users.find_one.return_value = {
         "_id": ObjectId(),
@@ -39,7 +41,7 @@ def test_login_success(mock_bcrypt, mock_users, test_client):
     }
     mock_bcrypt.check_password_hash.return_value = True
 
-    response = test_client.post(
+    response = client.post(
         "/login-signup",
         data={"username": "testuser", "password": "password", "submit": "Login"},
     )
@@ -48,7 +50,9 @@ def test_login_success(mock_bcrypt, mock_users, test_client):
 
 
 @patch("app.users")
-def test_login_failure(mock_users, client):
+def test_login_failure(
+    mock_users, client
+):  # pylint: disable=redefined-outer-name
     """Test failed login."""
     mock_users.find_one.return_value = None
 
@@ -62,7 +66,9 @@ def test_login_failure(mock_users, client):
 
 @patch("app.users")
 @patch("app.bcrypt")
-def test_signup_success(mock_bcrypt, mock_users, client):
+def test_signup_success(
+    mock_bcrypt, mock_users, client
+):  # pylint: disable=redefined-outer-name
     """Test successful signup."""
     mock_users.find_one.return_value = None
     mock_bcrypt.generate_password_hash.return_value = b"hashed_password"
