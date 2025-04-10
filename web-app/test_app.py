@@ -1,7 +1,7 @@
 """Unit tests for the Flask application."""
 
-import pytest
 from unittest.mock import patch
+import pytest
 from bson.objectid import ObjectId
 from flask_login import UserMixin
 from app import app
@@ -30,7 +30,7 @@ def client():
 
 @patch("app.users")
 @patch("app.bcrypt")
-def test_login_success(mock_bcrypt, mock_users, client):
+def test_login_success(mock_bcrypt, mock_users, test_client):
     """Test successful login."""
     mock_users.find_one.return_value = {
         "_id": ObjectId(),
@@ -39,7 +39,7 @@ def test_login_success(mock_bcrypt, mock_users, client):
     }
     mock_bcrypt.check_password_hash.return_value = True
 
-    response = client.post(
+    response = test_client.post(
         "/login-signup",
         data={"username": "testuser", "password": "password", "submit": "Login"},
     )
@@ -190,7 +190,8 @@ def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests
 @patch("app.render_template")
 @patch("app.current_user")
 @patch("app.users")
-def test_view_entry_found(mock_users, mock_current_user, mock_render_template, mock_entries, client):
+def test_view_entry_found(mock_users, mock_current_user, 
+                          mock_render_template, mock_entries, client):
     """Test rendering a journal entry page when the entry is found."""
     test_entry = {
         "_id": ObjectId("67f6d1236aaf92738f8f8855"),
