@@ -1,6 +1,6 @@
 import pytest
 from app import app
-from flask_login import login_user, logout_user, User
+from flask_login import login_user
 from unittest.mock import patch
 from bson.objectid import ObjectId
 
@@ -105,7 +105,7 @@ def test_add_entry(mock_render_template, client):
     user = MockUser(id="test_user_id")
     login_user(user, remember=True)
     response = client.get("/add-entry")
-    
+
     assert response.status_code == 200
     mock_render_template.assert_called_once_with("new_entry.html")
 
