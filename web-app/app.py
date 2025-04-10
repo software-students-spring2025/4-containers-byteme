@@ -158,8 +158,10 @@ def view_entry(entry_id):
     app.logger.debug("*** view_entry(): Found entry: %s", entry)
     
     sentiment_score = entry.get("sentiment", {}).get("composite_score", 0)
+    app.logger.debug("*** view_entry(): composite_score= %s", sentiment_score)
     
-    return render_template("page.html", entry=entry, quotes=quotes, sentiment_score=sentiment_score)
+    
+    return render_template("page.html", entry=entry, sentiment_score=sentiment_score)
 
 if __name__ == "__main__":
     app.run(debug=True)  
