@@ -12,14 +12,32 @@
     body {
       margin: 0;
       padding: 0;
-      background: url('static/4.webp') no-repeat center center fixed; /* Hardcoded for score 3 */
-      background-size: cover;
       font-family: sans-serif;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       transition: background 0.5s ease-in-out;
+    }
+
+    body.background-score-1 {
+      background-image: url('{{ url_for("static", filename="1.jpg") }}');
+    }
+
+    body.background-score-2 {
+      background-image: url('{{ url_for("static", filename="2.jpg") }}');
+    }
+
+    body.background-score-3 {
+      background-image: url('{{ url_for("static", filename="3.jpg") }}');
+    }
+
+    body.background-score-4 {
+      background-image: url('{{ url_for("static", filename="4.jpg") }}');
+    }
+
+    body.background-score-5 {
+      background-image: url('{{ url_for("static", filename="5.jpg") }}');
     }
 
     .container {
@@ -36,6 +54,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      max-width: 650px;
     }
 
     .right-panel {
@@ -43,7 +62,7 @@
       display: flex;
       flex-direction: column;
       gap: 30px;
-      align-items: flex-start;
+      align-items: center;
     }
 
     .date {
@@ -57,15 +76,16 @@
       padding: 20px;
       border-radius: 15px;
       min-height: 300px;
-      max-width: 600px;
       font-family: 'September Mornings', cursive;
       font-size: 30px;
       white-space: pre-wrap;
+      border: 2px solid #ddd;
     }
 
     .mood-bar {
       display: flex;
       gap: 2px;
+      margin-top: 20px;
     }
 
     .mood-box {
@@ -83,6 +103,7 @@
       font-style: italic;
       font-size: 18px;
       max-width: 300px;
+      margin-top: 20px;
     }
 
     /* Mood score color classes */
@@ -106,6 +127,7 @@
       margin-bottom: 20px;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      align-self: flex-start;
     }
 
     .back-button:hover {
@@ -113,7 +135,7 @@
     }
   </style>
 </head>
-<body>
+<body class="background-score-{{ entry['sentiment']['composite_score']|round(0)|int }}">
   <div class="container">
     <div class="left-panel">
       <a href="{{ url_for('home') }}" class="back-button">Back to Home</a>
@@ -121,16 +143,25 @@
       <div class="entry">{{ entry['text'] }}</div>
     </div>
 
-    <p><strong>Mood Score:</strong> {{ sentiment_score }}</p>
-    
-    <div class="mood-bar">
-      {% for i in range(1, 6) %}
-        <div class="mood-box {% if i <= sentiment_score %}score-{{ sentiment_score }}{% endif %}"></div>
-      {% endfor %}
-    </div>
-
+    <div class="right-panel">
+      <div class="mood-bar">
+        {% set rounded_score = entry['sentiment']['composite_score']|round(0)|int %}
+        {% for i in range(1, 6) %}
+          <div class="mood-box {% if i <= rounded_score %}score-{{ rounded_score }}{% endif %}"></div>
+        {% endfor %}
+      </div>
+      
       <div class="quote-box">
-        "Keep going, you’re doing better than you think."
+        {% set quotes = {
+          1: ["You are not alone. Keep pushing!", "It's okay to have bad days."],
+          2: ["You are doing well, take a deep breath.", "Small steps lead to big changes."],
+          3: ["You're on the right track!", "Stay positive and keep going."],
+          4: ["You're making progress. Keep it up!", "Believe in yourself, you're doing great."],
+          5: ["You're amazing! Keep shining!", "You're unstoppable, keep pushing forward."]
+        } %}
+        
+        {% set random_quote = quotes[rounded_score]|random %}
+        "{{ random_quote }}"
       </div>
     </div>
   </div>
