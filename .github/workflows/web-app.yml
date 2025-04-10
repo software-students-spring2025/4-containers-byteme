@@ -1,4 +1,4 @@
-name: Machine Learning Client CI
+name: Web App Client CI
 
 on:
   push:
@@ -13,12 +13,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Copy env.example to .env
-        run: cp machine-learning-client/env.example machine-learning-client/.env
+        run: cp web-app/env.example web-app/.env
 
       - name: Build Docker image
         run: |
-          docker build -t ml-client-test ./machine-learning-client
+          docker build -t web-app-test ./web-app
 
       - name: Run tests inside container with env vars
         run: |
-          docker run --rm --env-file machine-learning-client/.env ml-client-test pytest
+          docker run --rm --env-file web-app/.env web-app-test pytest

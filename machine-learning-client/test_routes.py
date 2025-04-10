@@ -19,7 +19,7 @@ def test_analyze_and_store_success(
     mock_analyze, mock_entries_col, client
 ):  # pylint: disable=redefined-outer-name
     """Test the /analyze route for successful sentiment analysis and DB update."""
-    test_entry_id = "123"
+    test_entry_id = "507f1f77bcf86cd799439011"
     test_text = "I love this app!"
     mock_analyze.return_value = {
         "negative": 0.01,
