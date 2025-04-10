@@ -81,7 +81,6 @@ def test_signup_failure(mock_users, client):
 #     assert response.location.endswith("/login-signup")
 
 
-
 @patch("app.render_template")
 @patch("app.entries")
 @patch("app.current_user")
@@ -149,7 +148,7 @@ def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests
         "entry_id": str(test_entry_id),
     }
 
-    user = MockUser(id=ObjectId()) 
+    user = MockUser(id=ObjectId("67f5ea3b20185e29bd744a71")) 
     mock_users.find_one.return_value = {"_id": user.id, "username": "testuser", "password": "hashed_password"}
     mock_current_user.is_authenticated = True
     mock_current_user.id = user.get_id()  
@@ -166,7 +165,7 @@ def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests
     assert response.status_code == 302
     assert response.location.endswith(f"/entry/{test_entry_id}")
     mock_entries.insert_one.assert_called_once_with({
-        "user_id": "12345",
+        "user_id": "67f5ea3b20185e29bd744a71",
         "journal_date": "2023-01-01",
         "text": "Test entry",
     })
