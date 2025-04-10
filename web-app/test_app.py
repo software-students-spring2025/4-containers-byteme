@@ -255,7 +255,7 @@ def test_view_entry_not_found(
     mock_users.find_one.return_value = {
         "_id": user.id,
         "username": "testuser",
-        "password": "hashed_password"
+        "password": "hashed_password",
     }
     mock_current_user.is_authenticated = True
     mock_current_user.id = user.get_id()
