@@ -9,6 +9,7 @@ from app import app
 # pylint: disable=too-few-public-methods
 class MockUser:
     """Mock user class to simulate a user object."""
+
     # pylint: disable=redefined-builtin
     def __init__(self, id):
         self.id = id
@@ -32,18 +33,20 @@ def client():
 
 @patch("app.users")
 @patch("app.bcrypt")
-def test_login_success(mock_bcrypt, mock_users, client):  # pylint: disable=redefined-outer-name
+def test_login_success(
+    mock_bcrypt, mock_users, client
+):  # pylint: disable=redefined-outer-name
     """Test successful login."""
     mock_users.find_one.return_value = {
         "_id": ObjectId(),
         "username": "testuser",
-        "password": "hashed_password"
+        "password": "hashed_password",
     }
     mock_bcrypt.check_password_hash.return_value = True
 
     response = client.post(
         "/login-signup",
-        data={"username": "testuser", "password": "password", "submit": "Login"}
+        data={"username": "testuser", "password": "password", "submit": "Login"},
     )
     assert response.status_code == 302
     assert response.location.endswith("/")
@@ -56,7 +59,7 @@ def test_login_failure(mock_users, client):  # pylint: disable=redefined-outer-n
 
     response = client.post(
         "/login-signup",
-        data={"username": "testuser", "password": "password", "submit": "Login"}
+        data={"username": "testuser", "password": "password", "submit": "Login"},
     )
     assert response.status_code == 400
     assert b"Invalid credentials" in response.data
@@ -64,14 +67,16 @@ def test_login_failure(mock_users, client):  # pylint: disable=redefined-outer-n
 
 @patch("app.users")
 @patch("app.bcrypt")
-def test_signup_success(mock_bcrypt, mock_users, client):  # pylint: disable=redefined-outer-name
+def test_signup_success(
+    mock_bcrypt, mock_users, client
+):  # pylint: disable=redefined-outer-name
     """Test successful signup."""
     mock_users.find_one.return_value = None
     mock_bcrypt.generate_password_hash.return_value = b"hashed_password"
 
     response = client.post(
         "/login-signup",
-        data={"username": "newuser", "password": "password", "submit": "Sign Up"}
+        data={"username": "newuser", "password": "password", "submit": "Sign Up"},
     )
     assert response.status_code == 302
     assert response.location.endswith("/login-signup")
@@ -80,14 +85,11 @@ def test_signup_success(mock_bcrypt, mock_users, client):  # pylint: disable=red
 @patch("app.users")
 def test_signup_failure(mock_users, client):  # pylint: disable=redefined-outer-name
     """Test signup failure when user already exists."""
-    mock_users.find_one.return_value = {
-        "_id": ObjectId(),
-        "username": "existinguser"
-    }
+    mock_users.find_one.return_value = {"_id": ObjectId(),"username": "existinguser"}
 
     response = client.post(
         "/login-signup",
-        data={"username": "existinguser", "password": "password", "submit": "Sign Up"}
+        data={"username": "existinguser", "password": "password", "submit": "Sign Up"},
     )
     assert response.status_code == 400
     assert b"User already exists" in response.data
@@ -114,7 +116,9 @@ def test_home_authenticated(
 
 
 @patch("app.current_user")
-def test_home_unauthenticated(mock_current_user, client):  # pylint: disable=redefined-outer-name
+def test_home_unauthenticated(
+    mock_current_user, client
+):  # pylint: disable=redefined-outer-name
     """Test the home route for unauthenticated users."""
     mock_current_user.is_authenticated = False
 
@@ -127,13 +131,15 @@ def test_home_unauthenticated(mock_current_user, client):  # pylint: disable=red
 @patch("app.render_template")
 @patch("app.current_user")
 @patch("app.users")
-def test_add_entry(mock_users, mock_current_user, mock_render_template, client):  # pylint: disable=redefined-outer-name
+def test_add_entry(
+    mock_users, mock_current_user, mock_render_template, client
+):  # pylint: disable=redefined-outer-name
     """Test the add-entry page for an authenticated user."""
     user = MockUser(id=ObjectId())
     mock_users.find_one.return_value = {
         "_id": user.id,
         "username": "testuser",
-        "password": "hashed_password"
+        "password": "hashed_password",
     }
     mock_current_user.is_authenticated = True
     mock_current_user.id = user.get_id()
@@ -161,14 +167,14 @@ def test_submit_entry(
     mock_requests.return_value.status_code = 200
     mock_requests.return_value.json.return_value = {
         "status": "updated",
-        "entry_id": str(test_entry_id)
+        "entry_id": str(test_entry_id),
     }
 
     user = MockUser(id=ObjectId("67f5ea3b20185e29bd744a71"))
     mock_users.find_one.return_value = {
         "_id": user.id,
         "username": "testuser",
-        "password": "hashed_password"
+        "password": "hashed_password",
     }
     mock_current_user.is_authenticated = True
     mock_current_user.id = user.get_id()
@@ -177,9 +183,7 @@ def test_submit_entry(
     with client.session_transaction() as session:
         session['_user_id'] = str(user.id)
 
-    response = client.post("/submit-entry", data={
-        "date": "2023-01-01",
-        "entry": "Test entry"
+    response = client.post("/submit-entry", data={"date": "2023-01-01", "entry": "Test entry"
     })
 
     assert response.status_code == 302
