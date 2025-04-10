@@ -112,32 +112,6 @@ def test_home_unauthenticated(mock_current_user, client):
     assert "/login-signup" in response.location
 
 
-import pytest
-from unittest.mock import patch, MagicMock
-from flask_login import login_user, current_user
-from app import app
-from bson import ObjectId  # Import ObjectId to create a valid ObjectId
-from flask import session
-
-# Mock user class to simulate a user object
-class MockUser:
-    def __init__(self, id):
-        self.id = id
-        self.is_authenticated = True
-        self.is_active = True
-        self.is_anonymous = False
-
-    def get_id(self):
-        return str(self.id)  # Ensure the get_id method returns a string of the user id
-
-@pytest.fixture
-def client():
-    """Fixture to create a test client for the Flask app."""
-    app.config["TESTING"] = True
-    with app.test_client() as client:
-        yield client
-
-
 @patch("app.render_template")
 @patch("app.current_user")
 @patch("app.users")  # Mocking the users database
