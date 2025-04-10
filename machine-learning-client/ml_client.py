@@ -1,5 +1,5 @@
 """
-Sentiment analysis Flask API using RoBERTa and MongoDB. 
+Sentiment analysis Flask API using RoBERTa and MongoDB.
 Module to analyze sentiment using a pre-trained
 RoBERTa model for sentiment analysis on Twitter data.
 This module loads the model and tokenizer,
@@ -92,12 +92,14 @@ def analyze_and_store():
         "negative": float(sentiment_scores.get("negative", 0)),
         "neutral": float(sentiment_scores.get("neutral", 0)),
         "positive": float(sentiment_scores.get("positive", 0)),
-        "composite_score": float(sentiment_scores.get("composite_score", 0))
+        "composite_score": float(sentiment_scores.get("composite_score", 0)),
     }
     app.logger.debug("* analyze_and_store(): Sentiment scores: %s", sentiment_scores)
     print("* analyze_and_store(): Sentiment scores: %s", sentiment_scores)
     entries_col.update_one(
-        {"_id": ObjectId(entry_id)}, {"$set": {"sentiment": sentiment_scores}}, upsert=True
+        {"_id": ObjectId(entry_id)},
+        {"$set": {"sentiment": sentiment_scores}},
+        upsert=True,
     )
     app.logger.debug("* analyze_and_store(): Updated entry with ID %s", entry_id)
     print("* analyze_and_store(): Updated entry with ID %s", entry_id)
