@@ -212,7 +212,7 @@ def test_view_entry_found(mock_current_user, mock_render_template, mock_entries,
 
     # Create a mock user
     # user = type("User", (), {"id": "12345"})()  # Simulate a user object with an 'id'
-    user = MockUser(id=ObjectId("12345")) 
+    user = MockUser(id=ObjectId()) 
     # Simulate a user being logged in by manually setting the session
     with client.session_transaction() as session:
         session['_user_id'] = str(user.id)  # Set user ID in session
