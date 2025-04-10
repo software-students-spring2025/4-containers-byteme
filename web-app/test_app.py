@@ -112,28 +112,59 @@ def test_home_unauthenticated(mock_current_user, client):
     assert "/login-signup" in response.location
 
 
+import pytest
+from unittest.mock import patch, MagicMock
+from flask_login import login_user, current_user
+from app import app
+from bson import ObjectId  # Import ObjectId to create a valid ObjectId
+from flask import session
+
+# Mock user class to simulate a user object
+class MockUser:
+    def __init__(self, id):
+        self.id = id
+        self.is_authenticated = True
+        self.is_active = True
+        self.is_anonymous = False
+
+    def get_id(self):
+        return str(self.id)  # Ensure the get_id method returns a string of the user id
+
+@pytest.fixture
+def client():
+    """Fixture to create a test client for the Flask app."""
+    app.config["TESTING"] = True
+    with app.test_client() as client:
+        yield client
+
+
 @patch("app.render_template")
 @patch("app.current_user")
-def test_add_entry(mock_current_user, mock_render_template, client):
+@patch("app.users")  # Mocking the users database
+def test_add_entry(mock_users, mock_current_user, mock_render_template, client):
     """Test the add-entry page for an authenticated user."""
     
-    # Create a mock user instance
-    user = MockUser(id="test_user_id")
-    
+    # Mock the user object
+    user = MockUser(id=ObjectId())  # Using a valid ObjectId here
+
+    # Mock the database call (users.find_one) to return the mock user when queried by ObjectId
+    mock_users.find_one.return_value = {"_id": user.id, "username": "testuser", "password": "hashed_password"}
+
     # Set up the mock for current_user
     mock_current_user.is_authenticated = True
-    mock_current_user.id = user.id
-    mock_current_user.get_id = user.get_id  # This makes sure current_user.get_id() works
-    
+    mock_current_user.id = user.get_id()  # Set current_user.id to the mock user's id
+    mock_current_user.get_id = user.get_id  # This ensures current_user.get_id() works as expected
+
     # Simulate a user being logged in by manually setting the session
     with client.session_transaction() as session:
-        session['_user_id'] = user.id  # Set the user ID in the session
-    
+        session['_user_id'] = str(user.id)  # Set the user ID in the session as a string
+
     # Now, make the request to the /add-entry route
     response = client.get("/add-entry")
-    
+
     assert response.status_code == 200
     mock_render_template.assert_called_once_with("new_entry.html")
+
 
 
 # @patch("app.requests.post")
