@@ -132,22 +132,21 @@ def test_home_unauthenticated(
 @patch("app.users")
 def test_add_entry(
     mock_users, mock_current_user, mock_render_template, client
-):  
+):  # pylint: disable=redefined-outer-name
     """Test the add-entry page for an authenticated user."""
-    user = MockUser(user_id=ObjectId())
-    mock_users.find_one.return_value = {
-        "_id": user.user_id,
-        "username": "testuser",
-        "password": "hashed_password",
-    }
-
+    
+    user = MockUser(id=ObjectId()) 
+    mock_users.find_one.return_value = {"_id": user.id, "username": "testuser", "password": "hashed_password"}
     mock_current_user.is_authenticated = True
-    mock_current_user.get_id.return_value = str(user.user_id)
+    mock_current_user.id = user.get_id()  
+    mock_current_user.get_id = user.get_id 
 
+    # Simulate a user being logged in by manually setting the session
     with client.session_transaction() as session:
-        session["_user_id"] = str(user.user_id)
+        session['_user_id'] = str(user.id) 
 
     response = client.get("/add-entry")
+
     assert response.status_code == 200
     mock_render_template.assert_called_once_with("new_entry.html")
 
