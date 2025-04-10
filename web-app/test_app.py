@@ -1,14 +1,15 @@
 """Unit tests for the Flask app routes."""
 
-import pytest
-from app import app
-from flask_login import current_user
 from unittest.mock import patch
+import pytest
 from bson.objectid import ObjectId
+from app import app
 
 
+# pylint: disable=too-few-public-methods
 class MockUser:
     """Mock user class to simulate a user object."""
+    # pylint: disable=redefined-builtin
     def __init__(self, id):
         self.id = id
         self.is_authenticated = True
@@ -16,6 +17,7 @@ class MockUser:
         self.is_anonymous = False
 
     def get_id(self):
+        """Return the user's ID."""
         return self.id
 
 
