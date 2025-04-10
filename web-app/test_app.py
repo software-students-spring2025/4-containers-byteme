@@ -217,7 +217,7 @@ def test_view_entry_found(
             "neutral": 0.1,
             "negative": 0.0,
             "composite_score": 4.8,
-        }
+        },
     }
 
     user = MockUser(id=ObjectId())
