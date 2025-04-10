@@ -25,7 +25,7 @@ git clone https://github.com/software-students-spring2025/4-containers-byteme.gi
 
 2. **Set up environment variables:**
 
-- In you cloned project directory, go to the `machine-learning-client` directory:
+- In your cloned project directory, go to the `machine-learning-client` directory:
 
 ```sh
 cd 4-containers-byteme/machine-learning-client
