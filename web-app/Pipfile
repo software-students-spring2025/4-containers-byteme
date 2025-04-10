@@ -10,9 +10,9 @@ flask = "*"
 python-dotenv = "*"
 pymongo = "*"
 flask-bcrypt = "*"
-flask-login = "*"
 bson = "*"
 requests = "*"
+flask-login = "*"
 
 [dev-packages]
 tomli = "*"
