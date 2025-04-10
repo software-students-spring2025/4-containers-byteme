@@ -85,7 +85,7 @@ def test_signup_success(
 @patch("app.users")
 def test_signup_failure(mock_users, client):  # pylint: disable=redefined-outer-name
     """Test signup failure when user already exists."""
-    mock_users.find_one.return_value = {"_id": ObjectId(),"username": "existinguser"}
+    mock_users.find_one.return_value = {"_id": ObjectId(), "username": "existinguser"}
 
     response = client.post(
         "/login-signup",
@@ -146,7 +146,7 @@ def test_add_entry(
     mock_current_user.get_id = user.get_id
 
     with client.session_transaction() as session:
-        session['_user_id'] = str(user.id)
+        session["_user_id"] = str(user.id)
 
     response = client.get("/add-entry")
 
@@ -181,18 +181,21 @@ def test_submit_entry(
     mock_current_user.get_id = user.get_id
 
     with client.session_transaction() as session:
-        session['_user_id'] = str(user.id)
+        session["_user_id"] = str(user.id)
 
-    response = client.post("/submit-entry", data={"date": "2023-01-01", "entry": "Test entry"
-    })
+    response = client.post(
+        "/submit-entry", data={"date": "2023-01-01", "entry": "Test entry"}
+    )
 
     assert response.status_code == 302
     assert response.location.endswith(f"/entry/{test_entry_id}")
-    mock_entries.insert_one.assert_called_once_with({
-        "user_id": ObjectId("67f5ea3b20185e29bd744a71"),
-        "journal_date": "2023-01-01",
-        "text": "Test entry"
-    })
+    mock_entries.insert_one.assert_called_once_with(
+        {
+            "user_id": ObjectId("67f5ea3b20185e29bd744a71"),
+            "journal_date": "2023-01-01",
+            "text": "Test entry",
+        }
+    )
     mock_requests.assert_called_once()
 
 
