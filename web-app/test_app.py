@@ -135,48 +135,54 @@ def test_add_entry(mock_users, mock_current_user, mock_render_template, client):
 
 
 
-# @patch("app.requests.post")
-# @patch("app.current_user")
-# @patch("app.entries")
-# def test_submit_entry(mock_entries, client):
-#     """Test submitting a journal entry."""
-#     with patch("app.current_user") as mock_user, patch("app.requests.post") as mock_requests:
-#         mock_user.is_authenticated = True
-#         mock_user.id = "12345"
-#         test_entry_id = ObjectId("67f6d1236aaf92738f8f8855")
-#         mock_entries.insert_one.return_value.inserted_id = test_entry_id
-#         mock_requests.return_value.status_code = 200
-#         mock_requests.return_value.json.return_value = {
-#             "status": "updated",
-#             "entry_id": str(test_entry_id),
-#         }
-
-#         response = client.post("/submit-entry", data={
-#             "date": "2023-01-01",
-#             "entry": "Test entry"
-#         })
-
-#         assert response.status_code == 302
-#         assert response.location.endswith(f"/entry/{test_entry_id}")
-#         mock_entries.insert_one.assert_called_once_with({
-#             "user_id": "12345",
-#             "journal_date": "2023-01-01",
-#             "text": "Test entry",
-#         })
-#         mock_requests.assert_called_once()
-
-
-@patch("app.entries")  # Mock the 'entries' object (database)
-@patch("app.render_template")  # Mock the render_template function
+@patch("app.requests.post")
+@patch("app.entries")
 @patch("app.current_user")
-@patch("app.users")  # Mock the current_user from flask-login
+@patch("app.users") 
+def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests, client):
+    """Test submitting a journal entry."""        
+    test_entry_id = ObjectId("67f6d1236aaf92738f8f8855")
+    mock_entries.insert_one.return_value.inserted_id = test_entry_id
+    mock_requests.return_value.status_code = 200
+    mock_requests.return_value.json.return_value = {
+        "status": "updated",
+        "entry_id": str(test_entry_id),
+    }
+
+    user = MockUser(id=ObjectId()) 
+    mock_users.find_one.return_value = {"_id": user.id, "username": "testuser", "password": "hashed_password"}
+    mock_current_user.is_authenticated = True
+    mock_current_user.id = user.get_id()  
+    mock_current_user.get_id = user.get_id 
+
+    with client.session_transaction() as session:
+        session['_user_id'] = str(user.id) 
+
+    response = client.post("/submit-entry", data={
+        "date": "2023-01-01",
+        "entry": "Test entry"
+    })
+
+    assert response.status_code == 302
+    assert response.location.endswith(f"/entry/{test_entry_id}")
+    mock_entries.insert_one.assert_called_once_with({
+        "user_id": "12345",
+        "journal_date": "2023-01-01",
+        "text": "Test entry",
+    })
+    mock_requests.assert_called_once()
+
+
+@patch("app.entries") 
+@patch("app.render_template") 
+@patch("app.current_user")
+@patch("app.users") 
 def test_view_entry_found(mock_users, mock_current_user, mock_render_template, mock_entries, client):
     """Test rendering a journal entry page when the entry is found."""
     
-    # Define the test entry to mock the database response
     test_entry = {
-        "_id": ObjectId("67f6d1236aaf92738f8f8855"),  # Ensure this is a valid ObjectId
-        "user_id": "12345",  # This user_id should match what the mock user has
+        "_id": ObjectId("67f6d1236aaf92738f8f8855"), 
+        "user_id": "12345",  
         "journal_date": "2023-01-01",
         "text": "Test entry",
         "sentiment": {
@@ -187,31 +193,24 @@ def test_view_entry_found(mock_users, mock_current_user, mock_render_template, m
         }
     }
 
-    # Create a mock user with a valid ObjectId
     user = MockUser(id=ObjectId()) 
     mock_users.find_one.return_value = {"_id": user.id, "username": "testuser", "password": "hashed_password"}
     mock_current_user.is_authenticated = True
     mock_current_user.id = user.get_id()  
     mock_current_user.get_id = user.get_id 
 
-    # Simulate a user being logged in by manually setting the session
     with client.session_transaction() as session:
-        session['_user_id'] = str(user.id)  # Set user ID in session
+        session['_user_id'] = str(user.id)  
     
-    # Mock the database call to return the test entry when requested by ObjectId
     mock_entries.find_one.return_value = test_entry
 
-    # Make the GET request to the route with the test entry ID
-    response = client.get("/entry/67f6d1236aaf92738f8f8855")  # The ID in the URL is a string
-    
-    # Check for status code 200, indicating no redirection occurred
-    assert response.status_code == 200
+    response = client.get("/entry/67f6d1236aaf92738f8f8855")  
 
-    # Ensure that the render_template function was called with the correct arguments
+    assert response.status_code == 200
     mock_render_template.assert_called_once_with(
-        "page.html",  # Template name
-        entry=test_entry,  # The entry object
-        sentiment_score=4.8  # Sentiment score extracted from the entry
+        "page.html", 
+        entry=test_entry,  
+        sentiment_score=4.8  
     )
 
 

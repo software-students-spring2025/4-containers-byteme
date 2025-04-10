@@ -6,7 +6,7 @@
 
 ## Project Overview
 
-FeelWrite is a responsive digital journal web app that allows users to log their daily experiences and receive immediate feedback based on the sentiment of their entries. Users can type journal entries on the website, and the application uses Machine Learning to analyze the sentiment of the text, determining whether the user is in a positive, negative, or neutral emotional state. Based on this analysis, the website generates personalized responses, such as providing motivational or empathetic messages tailored to the user's mood. In addition, users can also view their previous entries, allowing them to track and reflect on their emotional journey.
+FeelWrite is a responsive digital journal web app that allows users to log their daily experiences and receive immediate feedback based on the sentiment of their entries. Users can type journal entries on the website, and the application uses Machine Learning to analyze the sentiment of the text, determining whether the user is in a positive, negative, or neutral emotional state. Based on the analysis of each entry, the website generates a personalized response, such as providing a motivational or empathetic message with a background image tailored to the user's mood. It also displays a mood meter bar corresponding to the sentiment score of the user's journal entry (5 = the most positive mood, 1 = the most negative mood). In addition, users can also view their previous entries, allowing them to track and reflect on their emotional journey.
 
 ## Teammates
 
