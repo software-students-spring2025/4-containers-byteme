@@ -165,7 +165,7 @@ def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests
     assert response.status_code == 302
     assert response.location.endswith(f"/entry/{test_entry_id}")
     mock_entries.insert_one.assert_called_once_with({
-        "user_id": "67f5ea3b20185e29bd744a71",
+        "user_id": ObjectId("67f5ea3b20185e29bd744a71"),
         "journal_date": "2023-01-01",
         "text": "Test entry",
     })
