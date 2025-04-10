@@ -50,9 +50,7 @@ def test_login_success(
 
 
 @patch("app.users")
-def test_login_failure(
-    mock_users, client
-):  # pylint: disable=redefined-outer-name
+def test_login_failure(mock_users, client):  # pylint: disable=redefined-outer-name
     """Test failed login."""
     mock_users.find_one.return_value = None
 
@@ -82,9 +80,7 @@ def test_signup_success(
 
 
 @patch("app.users")
-def test_signup_failure(
-    mock_users, client
-):  # pylint: disable=redefined-outer-name
+def test_signup_failure(mock_users, client):  # pylint: disable=redefined-outer-name
     """Test signup failure when user already exists."""
     mock_users.find_one.return_value = {
         "_id": ObjectId(),
@@ -207,8 +203,7 @@ def test_submit_entry(
 @patch("app.current_user")
 @patch("app.users")
 def test_view_entry_found(
-    mock_users, mock_current_user,
-    mock_render_template, mock_entries, client
+    mock_users, mock_current_user, mock_render_template, mock_entries, client
 ):  # pylint: disable=redefined-outer-name
     """Test rendering a journal entry page when the entry is found."""
     test_entry = {
