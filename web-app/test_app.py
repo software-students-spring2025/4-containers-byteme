@@ -1,18 +1,17 @@
 import pytest
 from app import app
-from flask_login import login_user
+from flask_login import current_user
 from unittest.mock import patch
 from bson.objectid import ObjectId
 
 
-# Mock User class for testing
 class MockUser:
-    """A simple mock class for testing purposes."""
+    """Mock user class to simulate a user object."""
     def __init__(self, id):
         self.id = id
-        self.is_authenticated = True
-        self.is_active = True
-        self.is_anonymous = False
+        self.is_authenticated = True  # Simulating an authenticated user
+        self.is_active = True  # Active user
+        self.is_anonymous = False  # Not an anonymous user
     
     def get_id(self):
         return self.id
@@ -117,16 +116,22 @@ def test_home_unauthenticated(mock_current_user, client):
 @patch("app.current_user")
 def test_add_entry(mock_current_user, mock_render_template, client):
     """Test the add-entry page for an authenticated user."""
-    # Create a mock user instance and log them in
+    
+    # Create a mock user instance
     user = MockUser(id="test_user_id")
+    
+    # Set up the mock for current_user
     mock_current_user.is_authenticated = True
     mock_current_user.id = user.id
+    mock_current_user.get_id = user.get_id  # This makes sure current_user.get_id() works
     
-    # Log in the mock user
-    login_user(user, remember=True)
-
+    # Simulate a user being logged in by manually setting the session
+    with client.session_transaction() as session:
+        session['_user_id'] = user.id  # Set the user ID in the session
+    
+    # Now, make the request to the /add-entry route
     response = client.get("/add-entry")
-
+    
     assert response.status_code == 200
     mock_render_template.assert_called_once_with("new_entry.html")
 
