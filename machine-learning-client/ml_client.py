@@ -1,6 +1,14 @@
-"""Sentiment analysis Flask API using RoBERTa and MongoDB."""
+"""
+Sentiment analysis Flask API using RoBERTa and MongoDB.
+Module to analyze sentiment using a pre-trained
+RoBERTa model for sentiment analysis on Twitter data.
+This module loads the model and tokenizer,
+then performs sentiment analysis on input text.
+"""
 
 # pip install transformers torch scipy
+import logging
+
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from scipy.special import softmax
 import torch
@@ -12,20 +20,12 @@ from bson.objectid import ObjectId
 # import database connection
 from db import db
 
-import logging
-
 app = Flask(__name__)
 entries_col = db["entries"]
 
 # Set up logging in Docker container's output
 logging.basicConfig(level=logging.DEBUG)
 
-"""
-Module to analyze sentiment using a pre-trained
-RoBERTa model for sentiment analysis on Twitter data.
-This module loads the model and tokenizer, 
-then performs sentiment analysis on input text.
-"""
 # Load model and tokenizer
 # Using a pre-trained RoBERTa model fine-tuned for sentiment analysis on Twitter data
 MODEL_NAME = "cardiffnlp/twitter-roberta-base-sentiment"
@@ -92,12 +92,14 @@ def analyze_and_store():
         "negative": float(sentiment_scores.get("negative", 0)),
         "neutral": float(sentiment_scores.get("neutral", 0)),
         "positive": float(sentiment_scores.get("positive", 0)),
-        "composite_score": float(sentiment_scores.get("composite_score", 0))
+        "composite_score": float(sentiment_scores.get("composite_score", 0)),
     }
     app.logger.debug("* analyze_and_store(): Sentiment scores: %s", sentiment_scores)
     print("* analyze_and_store(): Sentiment scores: %s", sentiment_scores)
     entries_col.update_one(
-        {"_id": ObjectId(entry_id)}, {"$set": {"sentiment": sentiment_scores}}, upsert=True
+        {"_id": ObjectId(entry_id)},
+        {"$set": {"sentiment": sentiment_scores}},
+        upsert=True,
     )
     app.logger.debug("* analyze_and_store(): Updated entry with ID %s", entry_id)
     print("* analyze_and_store(): Updated entry with ID %s", entry_id)
@@ -105,28 +107,6 @@ def analyze_and_store():
 
 
 if __name__ == "__main__":
-
-    # example_positive = (
-    #    "Today was such a good day. I woke up feeling refreshed and energized. "
-    #    "The sun was shining, and I finally had time to go for a walk in the park. "
-    # )
-    # sentiment_scores = analyze_sentiment(example_positive)
-    # print(f"Composite Score for Example1: {sentiment_scores['composite_score']:.2f}")
-
-    # example_neutral = (
-    #    "Today was a fairly ordinary day. I woke up and had a simple breakfast. "
-    #    "I worked for a few hours and had a couple of meetings in the afternoon."
-    # )
-    # sentiment_scores = analyze_sentiment(example_neutral)
-    # print(f"Composite Score for Example2: {sentiment_scores['composite_score']:.2f}")
-
-    # example_negative = (
-    #    "I feel frustrated today. Nothing seems to be going right at work, "
-    #    "and I’m overwhelmed by everything on my to-do list."
-    # )
-    # sentiment_scores = analyze_sentiment(example_negative)
-    # print(f"Composite Score for Example3: {sentiment_scores['composite_score']:.2f}")
-
     app.run(host="0.0.0.0", port=5001, debug=False)
     print("ml-client running on port 5001")
     app.logger.debug("*** ml-client is running")

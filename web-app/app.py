@@ -1,10 +1,11 @@
 """Main Flask app for web app"""
 
-# later get rid of unused modules
 import os
+import logging
+import requests
+import pymongo
 from flask import Flask, render_template, request, redirect, url_for
 from dotenv import load_dotenv
-import pymongo
 from flask_bcrypt import Bcrypt
 from flask_login import (
     LoginManager,
@@ -15,10 +16,6 @@ from flask_login import (
     current_user,
 )
 from bson.objectid import ObjectId
-from datetime import datetime
-import requests
-import logging
-import random
 
 # loading env file
 load_dotenv()
@@ -109,7 +106,9 @@ def home():
         return redirect(url_for("login_signup"))
 
     # fetch prev entries to display
-    user_entries = entries.find({"user_id": current_user.id}).sort("date", pymongo.DESCENDING)
+    user_entries = entries.find({"user_id": current_user.id}).sort(
+        "date", pymongo.DESCENDING
+    )
     return render_template("index.html", entries=user_entries)
 
 
@@ -118,6 +117,7 @@ def home():
 def add_entry():
     """Render journaling page"""
     return render_template("new_entry.html")
+
 
 @app.route("/submit-entry", methods=["POST"])
 @login_required
@@ -132,21 +132,34 @@ def submit_entry():
     }
     new_entry_id = entries.insert_one(doc).inserted_id
     app.logger.debug("*** submit_entry(): Inserted 1 entry: %s", new_entry_id)
-    
+
     # Trigger the /analyze endpoint in the ml_client service
-    analyze_url = "http://ml-client:5001/analyze"  
-    response = requests.post(analyze_url, json={"entry_id": str(new_entry_id), "text": text})
+    analyze_url = "http://ml-client:5001/analyze"
+    try:
+        response = requests.post(
+            analyze_url,
+            json={"entry_id": str(new_entry_id), "text": text},
+            timeout=5,
+        )
+    except requests.exceptions.RequestException as e:
+        app.logger.error("*** submit_entry(): Request failed: %s", e)
+        return "Error analyzing entry", 500
 
     if response.status_code == 200:
         data = response.json()
         status = data.get("status")
         updated_entry_id = data.get("entry_id")
 
-        app.logger.debug("*** submit_entry(): Analysis result=%s, entry_id=%s", status, updated_entry_id)
+        app.logger.debug(
+            "*** submit_entry(): Analysis result=%s, entry_id=%s",
+            status,
+            updated_entry_id,
+        )
         return redirect(url_for("view_entry", entry_id=updated_entry_id))
-    else:
-        app.logger.error("*** submit_entry(): Analysis failed: %s", response.text)
-        return "Error analyzing entry", 500
+
+    app.logger.error("*** submit_entry(): Analysis failed: %s", response.text)
+    return "Error analyzing entry", 500
+
 
 @app.route("/entry/<entry_id>")
 @login_required
@@ -156,13 +169,13 @@ def view_entry(entry_id):
     if not entry:
         return "Entry not found", 404
     app.logger.debug("*** view_entry(): Found entry: %s", entry)
-    
+
     sentiment_score = entry.get("sentiment", {}).get("composite_score", 0)
     app.logger.debug("*** view_entry(): composite_score= %s", sentiment_score)
-    
-    
+
     return render_template("page.html", entry=entry, sentiment_score=sentiment_score)
 
+
 if __name__ == "__main__":
-    app.run(debug=True)  
+    app.run(debug=True)
     app.logger.debug("*** web-app is running")
