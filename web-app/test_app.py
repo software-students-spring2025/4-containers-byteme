@@ -166,14 +166,16 @@ def test_add_entry(mock_users, mock_current_user, mock_render_template, client):
 #         mock_requests.assert_called_once()
 
 
-@patch("app.entries")
-@patch("app.render_template")
-@patch("app.current_user")
+@patch("app.entries")  # Mock the 'entries' object (database)
+@patch("app.render_template")  # Mock the render_template function
+@patch("app.current_user")  # Mock the current_user from flask-login
 def test_view_entry_found(mock_current_user, mock_render_template, mock_entries, client):
     """Test rendering a journal entry page when the entry is found."""
+    
+    # Define the test entry to mock the database response
     test_entry = {
-        "_id": ObjectId("67f6d1236aaf92738f8f8855"),
-        "user_id": "12345",
+        "_id": ObjectId("67f6d1236aaf92738f8f8855"),  # Ensure this is a valid ObjectId
+        "user_id": "12345",  # This user_id should match what the mock user has
         "journal_date": "2023-01-01",
         "text": "Test entry",
         "sentiment": {
@@ -184,27 +186,27 @@ def test_view_entry_found(mock_current_user, mock_render_template, mock_entries,
         }
     }
 
-    # Create a mock user
-    # user = type("User", (), {"id": "12345"})()  # Simulate a user object with an 'id'
-    user = MockUser(id=ObjectId()) 
+    # Create a mock user with a valid ObjectId
+    user = MockUser(id=ObjectId("1234567890abcdef12345678"))  # Using a fixed ObjectId for the user
+    
     # Simulate a user being logged in by manually setting the session
     with client.session_transaction() as session:
         session['_user_id'] = str(user.id)  # Set user ID in session
     
-    # Mock the database call to return the test entry when reSquested
+    # Mock the database call to return the test entry when requested by ObjectId
     mock_entries.find_one.return_value = test_entry
 
-    # Make the GET request to the route
-    response = client.get("/entry/67f6d1236aaf92738f8f8855")
-
+    # Make the GET request to the route with the test entry ID
+    response = client.get("/entry/67f6d1236aaf92738f8f8855")  # The ID in the URL is a string
+    
     # Check for status code 200, indicating no redirection occurred
     assert response.status_code == 200
 
-    # Ensure that the render_template was called with the correct arguments
+    # Ensure that the render_template function was called with the correct arguments
     mock_render_template.assert_called_once_with(
-        "page.html",
-        entry=test_entry,
-        sentiment_score=4.8
+        "page.html",  # Template name
+        entry=test_entry,  # The entry object
+        sentiment_score=4.8  # Sentiment score extracted from the entry
     )
 
 # @patch("app.entries")
