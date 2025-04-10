@@ -63,6 +63,7 @@
       flex-direction: column;
       gap: 30px;
       align-items: center;
+      margin-top: 60px;
     }
 
     .date {
@@ -85,7 +86,7 @@
     .mood-bar {
       display: flex;
       gap: 2px;
-      margin-top: 20px;
+      margin-top: 5px;
     }
 
     .mood-box {
@@ -144,6 +145,7 @@
     </div>
 
     <div class="right-panel">
+      <p><strong>Your Sentiment Score:</strong></p>
       <div class="mood-bar">
         {% set rounded_score = entry['sentiment']['composite_score']|round(0)|int %}
         {% for i in range(1, 6) %}
