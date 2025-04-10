@@ -44,22 +44,28 @@ cd ../web-app
 cp env.example .env
 ```
 
-3. **Install and run [Docker Desktop](https://www.docker.com/products/docker-desktop/):**
+3. **Install and run Docker Desktop:**
 
+- Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - After installation, make sure Docker Desktop is running.
 - Create a [Docker Hub](https://hub.docker.com/) account if you don’t have one already.
 
-4. **Run the Docker containers**: Ensure you’re in the top-level project directory (the one that contains the `Dockerfile`).
+4. **Run the Docker containers**:
 
+- Make sure you’re in the top-level project directory where the `docker-compose.yml` file is located.
 - Use Docker Compose to boot up the web app, machine learning client, and mongodb database:
 
 ```sh
 docker compose up --force-recreate --build
 ```
 
-5. **Access the web app:** Open a web browser and go to [http://localhost:5001](http://localhost:5001) to view and interact with our app.
+5. **Access the web app:**
 
-6. When you are done viewing our web app, run the following command in a separate terminal window to stop the containers when done:
+- Open a web browser and go to [http://localhost:5001](http://localhost:5001) to view and interact with our app.
+
+6. **Stop the containers:**
+
+- When you are done viewing our web app, run the following command in a separate terminal window to stop the containers:
 
 ```sh
 docker compose down
