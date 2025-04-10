@@ -23,7 +23,7 @@ class MockUser:
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture
-def client(): 
+def client():
     """Fixture to create a test client for the Flask app."""
     app.config["TESTING"] = True
     with app.test_client() as client:
