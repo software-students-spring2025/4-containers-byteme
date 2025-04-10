@@ -12,7 +12,9 @@ pymongo = "*"
 flask-bcrypt = "*"
 flask-login = "*"
 bson = "*"
+requests = "*"
 
 [dev-packages]
 tomli = "*"
 typing-extensions = "*"
+pytest = "*"
