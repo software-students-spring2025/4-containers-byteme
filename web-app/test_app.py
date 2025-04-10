@@ -58,7 +58,7 @@ def test_signup_failure(mock_users, client):
 
 @patch("app.logout_user")
 @patch("app.current_user")
-def test_logout(mock_logout_user, mock_current_user, client):
+def test_logout(mock_current_user, mock_logout_user, client):
     """Test the logout route for an authenticated user."""
     mock_current_user.is_authenticated = True
     response = client.get("/logout")
@@ -66,6 +66,7 @@ def test_logout(mock_logout_user, mock_current_user, client):
     mock_logout_user.assert_called_once()
     assert response.status_code == 302
     assert response.location.endswith("/login-signup")
+
 
 
 @patch("app.render_template")
@@ -101,12 +102,10 @@ def test_home_unauthenticated(mock_current_user, client):
 @patch("app.current_user")
 @patch("app.render_template")
 def test_add_entry(mock_render_template, mock_current_user, client):
-    """Test /add-entry route when user is authenticated."""
-    with patch("app.current_user") as mock_user:
-        mock_current_user.is_authenticated = True
-        response = client.get("/add-entry")
-        assert response.status_code == 200
-        mock_render_template.assert_called_once_with("new_entry.html")
+    mock_current_user.is_authenticated = True
+    response = client.get("/add-entry")
+    assert response.status_code == 200
+    mock_render_template.assert_called_once_with("new_entry.html")
 
 
 # @patch("app.requests.post")
@@ -140,10 +139,10 @@ def test_add_entry(mock_render_template, mock_current_user, client):
 #         mock_requests.assert_called_once()
 
 
-@patch("app.current_user")
-@patch("app.render_template")
 @patch("app.entries")
-def test_view_entry_found(mock_entries, mock_render_template, mock_current_user, client):
+@patch("app.render_template")
+@patch("app.current_user")
+def test_view_entry_found(mock_current_user, mock_render_template, mock_entries, client):
     """Test rendering a journal entry page when the entry is found."""
     test_entry = {
         "_id": ObjectId("67f6d1236aaf92738f8f8855"),
@@ -157,8 +156,10 @@ def test_view_entry_found(mock_entries, mock_render_template, mock_current_user,
             "composite_score": 4.8
         }
     }
-    mock_entries.find_one.return_value = test_entry
+
     mock_current_user.is_authenticated = True
+    mock_current_user.id = "12345"
+    mock_entries.find_one.return_value = test_entry
 
     response = client.get("/entry/67f6d1236aaf92738f8f8855")
 
@@ -170,12 +171,13 @@ def test_view_entry_found(mock_entries, mock_render_template, mock_current_user,
     )
 
 
-@patch("app.current_user")
 @patch("app.entries")
-def test_view_entry_not_found(mock_entries, mock_current_user, client):
+@patch("app.current_user")
+def test_view_entry_not_found(mock_current_user, mock_entries, client):
     """Test rendering a journal entry page when the entry is not found."""
-    mock_entries.find_one.return_value = None
     mock_current_user.is_authenticated = True
+    mock_current_user.id = "12345"
+    mock_entries.find_one.return_value = None
 
     response = client.get("/entry/67f6d1236aaf92738f8f8855")
 
