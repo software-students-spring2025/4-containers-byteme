@@ -21,16 +21,16 @@ class MockUser(UserMixin):
 
 
 @pytest.fixture
-def client():
+def test_client():
     """Fixture to create a test client for the Flask app."""
     app.config["TESTING"] = True
-    with app.client() as client_fixture:
+    with app.test_client() as client_fixture:
         yield client_fixture
 
 
 @patch("app.users")
 @patch("app.bcrypt")
-def test_login_success(mock_bcrypt, mock_users, client):
+def test_login_success(mock_bcrypt, mock_users, test_client):
     """Test successful login."""
     mock_users.find_one.return_value = {
         "_id": ObjectId(),
@@ -39,7 +39,7 @@ def test_login_success(mock_bcrypt, mock_users, client):
     }
     mock_bcrypt.check_password_hash.return_value = True
 
-    response = client.post(
+    response = test_client.post(
         "/login-signup",
         data={"username": "testuser", "password": "password", "submit": "Login"},
     )

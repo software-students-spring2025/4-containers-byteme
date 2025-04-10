@@ -2,7 +2,6 @@
 
 import os
 import logging
-from datetime import datetime
 import requests
 import pymongo
 from flask import Flask, render_template, request, redirect, url_for
