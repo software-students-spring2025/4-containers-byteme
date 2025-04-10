@@ -5,6 +5,19 @@ from unittest.mock import patch
 from bson.objectid import ObjectId
 
 
+# Mock User class for testing
+class MockUser:
+    """A simple mock class for testing purposes."""
+    def __init__(self, id):
+        self.id = id
+        self.is_authenticated = True
+        self.is_active = True
+        self.is_anonymous = False
+    
+    def get_id(self):
+        return self.id
+    
+
 @pytest.fixture
 def client():
     """Fixture to create a test client for the Flask app."""
@@ -101,9 +114,17 @@ def test_home_unauthenticated(mock_current_user, client):
 
 
 @patch("app.render_template")
-def test_add_entry(mock_render_template, client):
+@patch("app.current_user")
+def test_add_entry(mock_current_user, mock_render_template, client):
+    """Test the add-entry page for an authenticated user."""
+    # Create a mock user instance and log them in
     user = MockUser(id="test_user_id")
+    mock_current_user.is_authenticated = True
+    mock_current_user.id = user.id
+    
+    # Log in the mock user
     login_user(user, remember=True)
+
     response = client.get("/add-entry")
 
     assert response.status_code == 200
