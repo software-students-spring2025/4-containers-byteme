@@ -168,8 +168,9 @@ def test_add_entry(mock_users, mock_current_user, mock_render_template, client):
 
 @patch("app.entries")  # Mock the 'entries' object (database)
 @patch("app.render_template")  # Mock the render_template function
-@patch("app.current_user")  # Mock the current_user from flask-login
-def test_view_entry_found(mock_current_user, mock_render_template, mock_entries, client):
+@patch("app.current_user")
+@patch("app.users")  # Mock the current_user from flask-login
+def test_view_entry_found(mock_users, mock_current_user, mock_render_template, mock_entries, client):
     """Test rendering a journal entry page when the entry is found."""
     
     # Define the test entry to mock the database response
@@ -187,7 +188,11 @@ def test_view_entry_found(mock_current_user, mock_render_template, mock_entries,
     }
 
     # Create a mock user with a valid ObjectId
-    user = MockUser(id=ObjectId("1234567890abcdef12345678"))  # Using a fixed ObjectId for the user
+    user = MockUser(id=ObjectId()) 
+    mock_users.find_one.return_value = {"_id": user.id, "username": "testuser", "password": "hashed_password"}
+    mock_current_user.is_authenticated = True
+    mock_current_user.id = user.get_id()  
+    mock_current_user.get_id = user.get_id 
     
     # Simulate a user being logged in by manually setting the session
     with client.session_transaction() as session:
