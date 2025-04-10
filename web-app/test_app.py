@@ -193,7 +193,7 @@ def test_view_entry_found(mock_users, mock_current_user, mock_render_template, m
     mock_current_user.is_authenticated = True
     mock_current_user.id = user.get_id()  
     mock_current_user.get_id = user.get_id 
-    
+
     # Simulate a user being logged in by manually setting the session
     with client.session_transaction() as session:
         session['_user_id'] = str(user.id)  # Set user ID in session
@@ -214,45 +214,22 @@ def test_view_entry_found(mock_users, mock_current_user, mock_render_template, m
         sentiment_score=4.8  # Sentiment score extracted from the entry
     )
 
-# @patch("app.entries")
-# @patch("app.render_template")
-# @patch("app.current_user")
-# def test_view_entry_found(mock_current_user, mock_render_template, mock_entries, client):
-#     """Test rendering a journal entry page when the entry is found."""
-#     test_entry = {
-#         "_id": ObjectId("67f6d1236aaf92738f8f8855"),
-#         "user_id": "12345",
-#         "journal_date": "2023-01-01",
-#         "text": "Test entry",
-#         "sentiment": {
-#             "positive": 0.9,
-#             "neutral": 0.1,
-#             "negative": 0.0,
-#             "composite_score": 4.8
-#         }
-#     }
-
-#     mock_current_user.is_authenticated = True
-#     mock_current_user.id = "12345"
-#     mock_entries.find_one.return_value = test_entry
-
-#     response = client.get("/entry/67f6d1236aaf92738f8f8855")
-
-#     assert response.status_code == 200
-#     mock_render_template.assert_called_once_with(
-#         "page.html",
-#         entry=test_entry,
-#         sentiment_score=4.8
-#     )
-
 
 @patch("app.entries")
 @patch("app.current_user")
-def test_view_entry_not_found(mock_current_user, mock_entries, client):
+@patch("app.users")  
+def test_view_entry_not_found(mock_users, mock_current_user, mock_entries, client):
     """Test rendering a journal entry page when the entry is not found."""
-    mock_current_user.is_authenticated = True
-    mock_current_user.id = "12345"
     mock_entries.find_one.return_value = None
+
+    user = MockUser(id=ObjectId()) 
+    mock_users.find_one.return_value = {"_id": user.id, "username": "testuser", "password": "hashed_password"}
+    mock_current_user.is_authenticated = True
+    mock_current_user.id = user.get_id()  
+    mock_current_user.get_id = user.get_id 
+
+    with client.session_transaction() as session:
+        session['_user_id'] = str(user.id)
 
     response = client.get("/entry/67f6d1236aaf92738f8f8855")
 
