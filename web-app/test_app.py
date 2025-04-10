@@ -132,7 +132,7 @@ def test_home_unauthenticated(
 @patch("app.users")
 def test_add_entry(
     mock_users, mock_current_user, mock_render_template, client
-):  # pylint: disable=redefined-outer-name
+):  
     """Test the add-entry page for an authenticated user."""
     user = MockUser(user_id=ObjectId())
     mock_users.find_one.return_value = {
