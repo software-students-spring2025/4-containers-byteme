@@ -31,17 +31,17 @@ git clone https://github.com/software-students-spring2025/4-containers-byteme.gi
 cd 4-containers-byteme/machine-learning-client
 ```
 
-- Copy the `.env.example` file and rename it to `.env`:
+- Copy the `env.example` file and rename it to `.env`:
 
 ```sh
-cp .env.example .env
+cp env.example .env
 ```
 
 - Repeat the same process to create another `.env` under the `web-app` directory:
 
 ```sh
 cd ../web-app
-cp .env.example .env
+cp env.example .env
 ```
 
 3. **Install and run [Docker Desktop](https://www.docker.com/products/docker-desktop/):**
