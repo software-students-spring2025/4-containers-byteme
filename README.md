@@ -44,8 +44,9 @@ cd ../web-app
 cp env.example .env
 ```
 
-3. **Install and run [Docker Desktop](https://www.docker.com/products/docker-desktop/):**
+3. **Install and run Docker Desktop:**
 
+- Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - After installation, make sure Docker Desktop is running.
 - Create a [Docker Hub](https://hub.docker.com/) account if you don’t have one already.
 
