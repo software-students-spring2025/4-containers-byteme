@@ -24,13 +24,13 @@ class MockUser(UserMixin):
 def client():
     """Fixture to create a test client for the Flask app."""
     app.config["TESTING"] = True
-    with app.test_client() as client_fixture:
+    with app.client() as client_fixture:
         yield client_fixture
 
 
 @patch("app.users")
 @patch("app.bcrypt")
-def test_login_success(mock_bcrypt, mock_users, test_client):
+def test_login_success(mock_bcrypt, mock_users, client):
     """Test successful login."""
     mock_users.find_one.return_value = {
         "_id": ObjectId(),
@@ -39,7 +39,7 @@ def test_login_success(mock_bcrypt, mock_users, test_client):
     }
     mock_bcrypt.check_password_hash.return_value = True
 
-    response = test_client.post(
+    response = client.post(
         "/login-signup",
         data={"username": "testuser", "password": "password", "submit": "Login"},
     )
@@ -48,11 +48,11 @@ def test_login_success(mock_bcrypt, mock_users, test_client):
 
 
 @patch("app.users")
-def test_login_failure(mock_users, test_client):
+def test_login_failure(mock_users, client):
     """Test failed login."""
     mock_users.find_one.return_value = None
 
-    response = test_client.post(
+    response = client.post(
         "/login-signup",
         data={"username": "testuser", "password": "password", "submit": "Login"},
     )
@@ -62,12 +62,12 @@ def test_login_failure(mock_users, test_client):
 
 @patch("app.users")
 @patch("app.bcrypt")
-def test_signup_success(mock_bcrypt, mock_users, test_client):
+def test_signup_success(mock_bcrypt, mock_users, client):
     """Test successful signup."""
     mock_users.find_one.return_value = None
     mock_bcrypt.generate_password_hash.return_value = b"hashed_password"
 
-    response = test_client.post(
+    response = client.post(
         "/login-signup",
         data={"username": "newuser", "password": "password", "submit": "Sign Up"},
     )
@@ -76,14 +76,14 @@ def test_signup_success(mock_bcrypt, mock_users, test_client):
 
 
 @patch("app.users")
-def test_signup_failure(mock_users, test_client):
+def test_signup_failure(mock_users, client):
     """Test signup failure when user already exists."""
     mock_users.find_one.return_value = {
         "_id": ObjectId(),
         "username": "existinguser",
     }
 
-    response = test_client.post(
+    response = client.post(
         "/login-signup",
         data={"username": "existinguser", "password": "password", "submit": "Sign Up"},
     )
@@ -94,7 +94,7 @@ def test_signup_failure(mock_users, test_client):
 @patch("app.render_template")
 @patch("app.entries")
 @patch("app.current_user")
-def test_home_authenticated(mock_current_user, mock_entries, mock_render_template, test_client):
+def test_home_authenticated(mock_current_user, mock_entries, mock_render_template, client):
     """Test the home route for authenticated users."""
     mock_current_user.is_authenticated = True
     mock_current_user.id = "test_user_id"
@@ -102,7 +102,7 @@ def test_home_authenticated(mock_current_user, mock_entries, mock_render_templat
     fake_entries = [{"_id": 1, "text": "Test entry"}]
     mock_entries.find.return_value.sort.return_value = fake_entries
 
-    response = test_client.get("/")
+    response = client.get("/")
 
     assert response.status_code == 200
     mock_entries.find.assert_called_once_with({"user_id": "test_user_id"})
@@ -110,11 +110,11 @@ def test_home_authenticated(mock_current_user, mock_entries, mock_render_templat
 
 
 @patch("app.current_user")
-def test_home_unauthenticated(mock_current_user, test_client):
+def test_home_unauthenticated(mock_current_user, client):
     """Test the home route for unauthenticated users."""
     mock_current_user.is_authenticated = False
 
-    response = test_client.get("/")
+    response = client.get("/")
     assert response.status_code == 302
     assert "/login-signup" in response.location
 
@@ -122,7 +122,7 @@ def test_home_unauthenticated(mock_current_user, test_client):
 @patch("app.render_template")
 @patch("app.current_user")
 @patch("app.users")
-def test_add_entry(mock_users, mock_current_user, mock_render_template, test_client):
+def test_add_entry(mock_users, mock_current_user, mock_render_template, client):
     """Test the add-entry page for an authenticated user."""
     user = MockUser(user_id=ObjectId())
     mock_users.find_one.return_value = {
@@ -134,10 +134,10 @@ def test_add_entry(mock_users, mock_current_user, mock_render_template, test_cli
     mock_current_user.is_authenticated = True
     mock_current_user.get_id.return_value = str(user.user_id)
 
-    with test_client.session_transaction() as session:
+    with client.session_transaction() as session:
         session["_user_id"] = str(user.user_id)
 
-    response = test_client.get("/add-entry")
+    response = client.get("/add-entry")
     assert response.status_code == 200
     mock_render_template.assert_called_once_with("new_entry.html")
 
@@ -146,7 +146,7 @@ def test_add_entry(mock_users, mock_current_user, mock_render_template, test_cli
 @patch("app.entries")
 @patch("app.current_user")
 @patch("app.users")
-def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests, test_client):
+def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests, client):
     """Test submitting a journal entry."""
     test_entry_id = ObjectId("67f6d1236aaf92738f8f8855")
     mock_entries.insert_one.return_value.inserted_id = test_entry_id
@@ -166,10 +166,10 @@ def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests
     mock_current_user.is_authenticated = True
     mock_current_user.get_id.return_value = str(user.user_id)
 
-    with test_client.session_transaction() as session:
+    with client.session_transaction() as session:
         session["_user_id"] = str(user.user_id)
 
-    response = test_client.post(
+    response = client.post(
         "/submit-entry",
         data={"date": "2023-01-01", "entry": "Test entry"},
     )
@@ -191,7 +191,7 @@ def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests
 @patch("app.current_user")
 @patch("app.users")
 def test_view_entry_found(mock_users, mock_current_user,
-                          mock_render_template, mock_entries, test_client):
+                          mock_render_template, mock_entries, client):
     """Test rendering a journal entry page when the entry is found."""
     test_entry = {
         "_id": ObjectId("67f6d1236aaf92738f8f8855"),
@@ -216,12 +216,12 @@ def test_view_entry_found(mock_users, mock_current_user,
     mock_current_user.is_authenticated = True
     mock_current_user.get_id.return_value = str(user.user_id)
 
-    with test_client.session_transaction() as session:
+    with client.session_transaction() as session:
         session["_user_id"] = str(user.user_id)
 
     mock_entries.find_one.return_value = test_entry
 
-    response = test_client.get("/entry/67f6d1236aaf92738f8f8855")
+    response = client.get("/entry/67f6d1236aaf92738f8f8855")
     assert response.status_code == 200
     mock_render_template.assert_called_once_with(
         "page.html", entry=test_entry, sentiment_score=4.8
@@ -231,7 +231,7 @@ def test_view_entry_found(mock_users, mock_current_user,
 @patch("app.entries")
 @patch("app.current_user")
 @patch("app.users")
-def test_view_entry_not_found(mock_users, mock_current_user, mock_entries, test_client):
+def test_view_entry_not_found(mock_users, mock_current_user, mock_entries, client):
     """Test rendering a journal entry page when the entry is not found."""
     mock_entries.find_one.return_value = None
 
@@ -245,9 +245,9 @@ def test_view_entry_not_found(mock_users, mock_current_user, mock_entries, test_
     mock_current_user.is_authenticated = True
     mock_current_user.get_id.return_value = str(user.user_id)
 
-    with test_client.session_transaction() as session:
+    with client.session_transaction() as session:
         session["_user_id"] = str(user.user_id)
 
-    response = test_client.get("/entry/67f6d1236aaf92738f8f8855")
+    response = client.get("/entry/67f6d1236aaf92738f8f8855")
     assert response.status_code == 404
     assert b"Entry not found" in response.data
