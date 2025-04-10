@@ -31,7 +31,13 @@ git clone https://github.com/software-students-spring2025/4-containers-byteme.gi
 cd 4-containers-byteme/machine-learning-client
 ```
 
-- Repeat the same process for the `web-app` directory:
+- Copy the `.env.example` file and rename it to `.env`:
+
+```sh
+cp .env.example .env
+```
+
+- Repeat the same process to create another `.env` under the `web-app` directory:
 
 ```sh
 cd ../web-app
@@ -51,7 +57,7 @@ cp .env.example .env
 docker compose up --force-recreate --build
 ```
 
-5. **Access the web app:** Open a web browser and go to `http://localhost:5001` to view and interact with our app.
+5. **Access the web app:** Open a web browser and go to [http://localhost:5001](http://localhost:5001) to view and interact with our app.
 
 6. When you are done viewing our web app, run the following command in a separate terminal window to stop the containers when done:
 
