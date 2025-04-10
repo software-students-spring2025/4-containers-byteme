@@ -82,7 +82,9 @@ def test_signup_success(
 
 
 @patch("app.users")
-def test_signup_failure(mock_users, client):
+def test_signup_failure(
+    mock_users, client
+):  # pylint: disable=redefined-outer-name
     """Test signup failure when user already exists."""
     mock_users.find_one.return_value = {
         "_id": ObjectId(),
@@ -100,7 +102,9 @@ def test_signup_failure(mock_users, client):
 @patch("app.render_template")
 @patch("app.entries")
 @patch("app.current_user")
-def test_home_authenticated(mock_current_user, mock_entries, mock_render_template, client):
+def test_home_authenticated(
+    mock_current_user, mock_entries, mock_render_template, client
+):  # pylint: disable=redefined-outer-name
     """Test the home route for authenticated users."""
     mock_current_user.is_authenticated = True
     mock_current_user.id = "test_user_id"
@@ -116,7 +120,9 @@ def test_home_authenticated(mock_current_user, mock_entries, mock_render_templat
 
 
 @patch("app.current_user")
-def test_home_unauthenticated(mock_current_user, client):
+def test_home_unauthenticated(
+    mock_current_user, client
+):  # pylint: disable=redefined-outer-name
     """Test the home route for unauthenticated users."""
     mock_current_user.is_authenticated = False
 
@@ -128,7 +134,9 @@ def test_home_unauthenticated(mock_current_user, client):
 @patch("app.render_template")
 @patch("app.current_user")
 @patch("app.users")
-def test_add_entry(mock_users, mock_current_user, mock_render_template, client):
+def test_add_entry(
+    mock_users, mock_current_user, mock_render_template, client
+):  # pylint: disable=redefined-outer-name
     """Test the add-entry page for an authenticated user."""
     user = MockUser(user_id=ObjectId())
     mock_users.find_one.return_value = {
@@ -152,7 +160,9 @@ def test_add_entry(mock_users, mock_current_user, mock_render_template, client):
 @patch("app.entries")
 @patch("app.current_user")
 @patch("app.users")
-def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests, client):
+def test_submit_entry(
+    mock_users, mock_current_user, mock_entries, mock_requests, client
+):  # pylint: disable=redefined-outer-name
     """Test submitting a journal entry."""
     test_entry_id = ObjectId("67f6d1236aaf92738f8f8855")
     mock_entries.insert_one.return_value.inserted_id = test_entry_id
@@ -196,8 +206,10 @@ def test_submit_entry(mock_users, mock_current_user, mock_entries, mock_requests
 @patch("app.render_template")
 @patch("app.current_user")
 @patch("app.users")
-def test_view_entry_found(mock_users, mock_current_user,
-                          mock_render_template, mock_entries, client):
+def test_view_entry_found(
+    mock_users, mock_current_user,
+    mock_render_template, mock_entries, client
+):  # pylint: disable=redefined-outer-name
     """Test rendering a journal entry page when the entry is found."""
     test_entry = {
         "_id": ObjectId("67f6d1236aaf92738f8f8855"),
@@ -237,7 +249,9 @@ def test_view_entry_found(mock_users, mock_current_user,
 @patch("app.entries")
 @patch("app.current_user")
 @patch("app.users")
-def test_view_entry_not_found(mock_users, mock_current_user, mock_entries, client):
+def test_view_entry_not_found(
+    mock_users, mock_current_user, mock_entries, client
+):  # pylint: disable=redefined-outer-name
     """Test rendering a journal entry page when the entry is not found."""
     mock_entries.find_one.return_value = None
 
